@@ -106,12 +106,12 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
   // get some paths
   if( function_exists('plugins_url') ){
     // 2.6 or better
-    $movie = plugins_url('wp-7feeds/rssinformer.swf');
-    $path = plugins_url('wp-7feeds/');
+    $movie = plugins_url('7feeds-news-ticker/rssinformer.swf');
+    $path = plugins_url('7feeds-news-ticker/');
   } else {
     // pre 2.6
-    $movie = get_bloginfo('wpurl') . "/wp-content/plugins/wp-7feeds/rssinformer.swf";
-    $path = get_bloginfo('wpurl')."/wp-content/plugins/wp-7feeds/";
+    $movie = get_bloginfo('wpurl') . "/wp-content/plugins/7feeds-news-ticker/rssinformer.swf";
+    $path = get_bloginfo('wpurl')."/wp-content/plugins/7feeds-news-ticker/";
   }
 
   $flashCode = '';
