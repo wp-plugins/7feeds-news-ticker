@@ -383,7 +383,6 @@ class WP_Widget_7feeds extends WP_Widget {
     $newoptions['news_content'] = strip_tags(stripslashes($_POST["wp7feeds_news_content"]));
     $newoptions['pub_time'] = strip_tags(stripslashes($_POST["wp7feeds_pub_time"]));
     $newoptions['widget_title'] = strip_tags(stripslashes($_POST["wp7feeds_widget_title"]));
-    $newoptions['widget_promote'] = strip_tags(stripslashes($_POST["wp7feeds_widget_promote"]));
 
     return $newoptions;
   }
@@ -413,7 +412,6 @@ class WP_Widget_7feeds extends WP_Widget {
     $news_content = attribute_escape($options['news_content']);
     $pub_time = attribute_escape($options['pub_time']);
     $widget_title = attribute_escape($options['widget_title']);
-    $widget_promote = attribute_escape($options['widget_promote']);
 
 		?>
 			<p><label for="wp7feeds_widget_x_size"><?php _e('Width (optional):'); ?> <input class="widefat" id="wp7feeds_widget_x_size" name="wp7feeds_widget_x_size" type="text" value="<?php echo $x_size; ?>" /></label></p>
@@ -435,10 +433,9 @@ class WP_Widget_7feeds extends WP_Widget {
 			
 			<p><label for="wp7feeds_widget_strip_tags"><input class="checkbox" id="wp7feeds_widget_strip_tags" name="wp7feeds_widget_strip_tags" type="checkbox" value="1" <?php if( $strip_tags == "1" ){ echo ' checked="checked"'; } ?> > Strip tags</label></p>
 			
-			<p><label for="wp7feeds_promote"><input class="checkbox" id="wp7feeds_promote" name="wp7feeds_widget_promote" type="checkbox" value="1" <?php if( $widget_promote == "1" ){ echo ' checked="checked"'; } ?> > Help to promote 7feeds</label></p>
-			
 			<input type="hidden" id="wp7feeds_widget_submit" name="wp7feeds_widget_submit" value="1" />
 		<?php
+		
   }
 }
 
