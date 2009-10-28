@@ -4,7 +4,7 @@ Donate link: http://7feeds.com/blog/
 Tags: flash ticket, news ticket, wordpress plugin, rss flashreader
 Requires at least: 2.8
 Tested up to: 2.8.5
-Stable tag: 1.1
+Stable tag: 1.01
 
 == Description ==
 
