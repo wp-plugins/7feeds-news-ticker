@@ -30,7 +30,7 @@ An answer to that question.
 
 == Screenshots ==
 
-1. This is appearance of flash ticker `/screen1.png`
+1. This is appearance of flash ticker
 
 == Changelog ==
 
