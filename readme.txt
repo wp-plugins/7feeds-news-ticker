@@ -4,7 +4,7 @@ Donate link: http://7feeds.com/blog/
 Tags: flash ticket, news ticket, wordpress plugin, rss flashreader
 Requires at least: 2.8
 Tested up to: 2.8.5
-Stable tag: 1.01
+Stable tag: 1.02
 
 == Description ==
 
@@ -33,6 +33,9 @@ An answer to that question.
 1. This is appearance of flash ticker
 
 == Changelog ==
+
+= Version 1.02 =
+* Fixed problem with widget checkbox.
 
 = Version 1.01 =
 * Fixed url problem.

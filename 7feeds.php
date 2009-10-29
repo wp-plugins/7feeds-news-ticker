@@ -3,7 +3,7 @@
 Plugin Name: 7feeds ticker
 Plugin URI: http://7feeds.com
 Description: Flash based RSS ticker widget for WordPress. <a href="http://7feeds.com">Visit widget page</a> for more information.
-Version: 1.01
+Version: 1.02
 Author: IOIX Ukraine
 Author URI: http://ioix.com.ua
 
@@ -94,14 +94,23 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
   if ($widget && !empty($widget_options)) {
     $options = $widget_options;
   }
-  
+
+  //Check box fields
+  $aF = array('open_new_window','strip_tags','widget_header','news_content','pub_time');
   $atOptions = get_option('wp7feeds_options');
   foreach ($atOptions as $key=>$val) {
-    if (!isset($options[$key]) || $options[$key] == '') {
+    if (empty($options[$key])) {
+      if (!in_array($key,$aF)) {
+        $options[$key] = '';
+      }else {
+        $options[$key] = (int)$options[$key];
+      }
+    }
+
+    if (!isset($options[$key]) || $options[$key] === '') {
       $options[$key] = $val;
     }
   }
-  
 
   // get some paths
   if( function_exists('plugins_url') ){
@@ -435,7 +444,7 @@ class WP_Widget_7feeds extends WP_Widget {
 			
 			<input type="hidden" id="wp7feeds_widget_submit" name="wp7feeds_widget_submit" value="1" />
 		<?php
-		
+
   }
 }
 
