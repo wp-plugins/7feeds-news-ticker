@@ -230,7 +230,7 @@ function wp_7feeds_get_theme_select($name, $val) {
 
   $options = '';
   for ($i=0;$i<count($aData); $i++) {
-    $options .= '<option value="'.$i.'" '.($i==$val?'selected':'').' style="background: '.wp_7feeds_get_theme_color($i,'body_bgcolor',1).';">'.$aData[$i].'</option>';
+    $options .= '<option value="'.$i.'" '.($i==$val?'selected':'').' style="background: '.wp_7feeds_get_theme_color($i,'border_color',1).';">'.$aData[$i].'</option>';
   }
 
   return '<select name="'.$name.'">'.$options.'</select>';
