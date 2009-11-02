@@ -130,6 +130,7 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
   $flashCode .= '<script type="text/javascript" src="'.$path.'swf_object.js"></script>';
   $flashCode .= '<script type="text/javascript">';
   $flashCode .= 'var so = new SWFObject("'.$movie.'", "movie", "'.$options['x_size'].'", "'.$options['y_size'].'", "8", "#FFFFFF");';
+  $flashCode .= 'so.addParam("wmode", "transparent");';
   $flashCode .= 'so.addVariable("version","1.4");';
   $flashCode .= 'so.addVariable("num_of_entries","'.$options['num_of_entries'].'");';
   $flashCode .= 'so.addVariable("title_text","7Feeds widget");';

@@ -4,7 +4,7 @@ Donate link: http://7feeds.com/blog/
 Tags: flash ticket, news ticket, wordpress plugin, rss flashreader
 Requires at least: 2.8
 Tested up to: 2.8.5
-Stable tag: 1.02
+Stable tag: 1.03
 
 == Description ==
 
@@ -33,6 +33,10 @@ An answer to that question.
 1. Flash based RSS ticker widget for WordPress.
 
 == Changelog ==
+
+= Version 1.03 =
+* Add transparent for flash ticket.
+* Fixed problem with HTML tags.
 
 = Version 1.02 =
 * Fixed problem with widget checkbox.
