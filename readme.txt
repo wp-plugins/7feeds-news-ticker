@@ -31,6 +31,7 @@ An answer to that question.
 == Screenshots ==
 
 1. Flash based RSS ticker widget for WordPress.
+2. Default widget options.
 
 == Changelog ==
 
