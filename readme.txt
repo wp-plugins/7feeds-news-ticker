@@ -4,7 +4,7 @@ Donate link: http://7feeds.com/blog/
 Tags: 7feeds, flash, ticker, wordpress, rss, plugin, widget, free, feed, news, support, contact form, themes, colors, titles, scrolling, settings, sidebar, vertical, website, add rss, plugin blog, color, WP, ioix ukraine
 Requires at least: 2.8
 Tested up to: 2.8.5
-Stable tag: 1.03
+Stable tag: 1.04
 
 == Description ==
 
@@ -34,6 +34,14 @@ An answer to that question.
 2. Default widget options.
 
 == Changelog ==
+
+= Version 1.04 =
+New features:
+* Mixing feeds (now you can add several feeds into one widget and mix the news items by your choice)
+* Added server configuration validator (PHP extensions check)
+
+Bug fixes:
+* Fixed problem with html special chars in feeds
 
 = Version 1.03 =
 * Add transparent for flash ticket.

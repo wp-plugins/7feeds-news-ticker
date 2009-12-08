@@ -3,7 +3,7 @@
 Plugin Name: 7feeds ticker
 Plugin URI: http://7feeds.com
 Description: Flash based RSS ticker widget for WordPress. <a href="http://7feeds.com">Visit widget page</a> for more information.
-Version: 1.03
+Version: 1.04
 Author: IOIX Ukraine
 Author URI: http://ioix.com.ua
 
@@ -22,6 +22,68 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+/***************** DEFINE *****************/
+//Get path
+if(function_exists('plugins_url')){
+  // 2.6 or better
+  $movie = plugins_url('7feeds-news-ticker/rssinformer.swf');
+  $path = plugins_url('7feeds-news-ticker/');
+} else {
+  // pre 2.6
+  $movie = get_bloginfo('wpurl') . "/wp-content/plugins/7feeds-news-ticker/rssinformer.swf";
+  $path = get_bloginfo('wpurl')."/wp-content/plugins/7feeds-news-ticker/";
+}
+
+define('_7FEEDS_PATH', $path);
+define('_7FEEDS_MOVIE_PATH', $movie);
+$GLOBALS['7FEEDS_ACTIVE'] = true;
+
+/***************** DEFINE *****************/
+
+_7feed_check_extensions();
+
+function _7feed_check_extensions($main=true) {
+  $GLOBALS['_7feeds_error_message'] = '';
+  $show = false;
+
+  if (!extension_loaded('curl') || !extension_loaded('mbstring')) {
+    if ($main) {
+
+      $GLOBALS['_7feeds_error_message'] = '7feeds warning: Server misconfiguration detected. Proceed to <a href="options-general.php?page=7feeds-news-ticker/7feeds.php">configuration page</a> | Dismiss';
+      $show = true;
+
+    }else {
+
+      $aErr[] = 'cURL (<span style="color:'.(!extension_loaded('curl')?'#FF0000">false':'#00FF00">true').'</span>)';
+      $aErr[] = 'MBString (<span style="color:'.(!extension_loaded('mbstring')?'#FF0000">false':'#00FF00">true').'</span>)';
+
+      if (!empty($aErr)) {
+        $GLOBALS['_7feeds_error_message'] = 'For correct functioning "7feeds" plugin requires following PHP Extensions:';
+        foreach ($aErr as $key=>$val) {
+          $GLOBALS['_7feeds_error_message'] .= '<BR>'.($key+1).') '.$val;
+        }
+        $GLOBALS['_7feeds_error_message'] .= '<BR>If you don\'t understand what it means, please contact your server administrator or hosting provider support staff and show then this error message!';
+      }
+
+      return $GLOBALS['_7feeds_error_message'];
+    }
+  }
+
+  if ($show) {
+    $GLOBALS['7FEEDS_ACTIVE'] = false;
+
+    function _7feed_warning() {
+      echo "<div id=\"_7feeds-warning\" style=\"background-color: #FE9090; border:1px solid #FFFFFF; color:#FFFFFF;\" class=\"updated\"><p><strong>".
+      __($GLOBALS['_7feeds_error_message']).
+      "</strong></p></div>";
+    }
+
+    add_action('admin_notices', '_7feed_warning');
+    return;
+  }
+
+}
 
 //initially set the options
 function wp_7feeds_install () {
@@ -72,9 +134,13 @@ function wp_7feeds_shortcode( $atts=NULL ){
 }
 
 // piece together the flash code
-function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options = array() ){
+function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options = array(), $widgetId = '' ){
   static $aWidgetIds;
 
+  if ($GLOBALS['7FEEDS_ACTIVE'] === false) {
+    return '';
+  }
+  
   if (!isset($aWidgetIds)) {
     $aWidgetIds = array();
   }
@@ -95,6 +161,11 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
     $options = $widget_options;
   }
 
+  $aTmp = unserialize($options['feed_url']);
+  if (empty($aTmp)) {
+    $options['feed_url'] = '';
+  }
+  
   //Check box fields
   $aF = array('open_new_window','strip_tags','widget_header','news_content','pub_time');
   $atOptions = get_option('wp7feeds_options');
@@ -111,25 +182,19 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
       $options[$key] = $val;
     }
   }
-
-  // get some paths
-  if( function_exists('plugins_url') ){
-    // 2.6 or better
-    $movie = plugins_url('7feeds-news-ticker/rssinformer.swf');
-    $path = plugins_url('7feeds-news-ticker/');
-  } else {
-    // pre 2.6
-    $movie = get_bloginfo('wpurl') . "/wp-content/plugins/7feeds-news-ticker/rssinformer.swf";
-    $path = get_bloginfo('wpurl')."/wp-content/plugins/7feeds-news-ticker/";
+  
+  $aTmp = unserialize($options['feed_url']);
+  if (!empty($widgetId) && is_array($aTmp) && !empty($aTmp)) {
+    $options['feed_url'] = $widgetId;
   }
-
+  
   $flashCode = '';
 
   $flashCode .= '<div id="wp-7feeds-flash_'.$num.'"></div>';
 
-  $flashCode .= '<script type="text/javascript" src="'.$path.'swf_object.js"></script>';
+  $flashCode .= '<script type="text/javascript" src="'._7FEEDS_PATH.'swf_object.js"></script>';
   $flashCode .= '<script type="text/javascript">';
-  $flashCode .= 'var so = new SWFObject("'.$movie.'", "movie", "'.$options['x_size'].'", "'.$options['y_size'].'", "8", "#FFFFFF");';
+  $flashCode .= 'var so = new SWFObject("'._7FEEDS_MOVIE_PATH.'", "movie", "'.$options['x_size'].'", "'.$options['y_size'].'", "8", "#FFFFFF");';
   $flashCode .= 'so.addParam("wmode", "transparent");';
   $flashCode .= 'so.addVariable("version","1.4");';
   $flashCode .= 'so.addVariable("num_of_entries","'.$options['num_of_entries'].'");';
@@ -164,7 +229,7 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
   $flashCode .= 'so.addVariable("use_rounded_corners","1");';
   $flashCode .= 'so.addVariable("open_new_window","'.$options['open_new_window'].'");';
   $flashCode .= 'so.addVariable("show_url_field","0");';
-  $flashCode .= 'so.addVariable("data_url","'.$path.'parser.php");';
+  $flashCode .= 'so.addVariable("data_url","'._7FEEDS_PATH.'parser.php");';
   $flashCode .= 'so.addVariable("feed_url","'.$options['feed_url'].'");';
   $flashCode .= 'so.addVariable("strip_tags","'.$options['strip_tags'].'");';
   $flashCode .= 'so.addVariable("elements_strcolor","0x777777");';
@@ -239,6 +304,11 @@ function wp_7feeds_get_theme_select($name, $val) {
 // options page
 function wp_7feeds_options() {
 
+  if ($GLOBALS['7FEEDS_ACTIVE'] === false) {
+    echo '<div id="_7feeds-warning" style="background-color: #FE9090; border:1px solid #FFFFFF; color:#FFFFFF;" class="updated"><p><strong>'._7feed_check_extensions(false).'</strong></p></div>';
+    exit;
+  }
+
   $options = $newoptions = get_option('wp7feeds_options');
 
   // if submitted, process results
@@ -250,7 +320,19 @@ function wp_7feeds_options() {
     $newoptions['num_of_entries'] = strip_tags(stripslashes($_POST["num_of_entries"]));
     $newoptions['pause_time'] = strip_tags(stripslashes($_POST["pause_time"]));
     $newoptions['open_new_window'] = strip_tags(stripslashes($_POST["open_new_window"]));
-    $newoptions['feed_url'] = strip_tags(stripslashes($_POST["feed_url"]));
+
+    if (is_array($_POST["feed_url"])) {
+      $aTmp = array();
+      foreach ($_POST["feed_url"] as $val) {
+        if (empty($val)) continue;
+        $aTmp[] = strip_tags(stripslashes($val));
+      }
+      $newoptions['feed_url'] = serialize($aTmp);
+    }else {
+      $newoptions['feed_url'] = strip_tags(stripslashes($_POST["feed_url"]));
+    }
+
+    $newoptions['news_order'] = strip_tags(stripslashes($_POST["news_order"]));
     $newoptions['strip_tags'] = strip_tags(stripslashes($_POST["strip_tags"]));
     $newoptions['theme'] = strip_tags(stripslashes($_POST["theme"]));
     $newoptions['widget_header'] = strip_tags(stripslashes($_POST["widget_header"]));
@@ -265,6 +347,12 @@ function wp_7feeds_options() {
     update_option('wp7feeds_options', $options);
   }
   // options form
+  /*echo '<script>';
+  echo 'function _7feeds_add_field(id){var el = document.getElementById(id); var clone = el.cloneNode(true); clone.value=""; clone.id=""; el.parentNode.appendChild(document.createElement("BR")); el.parentNode.appendChild(clone);}';
+  echo 'function _7feeds_rem_field(id){var el = document.getElementById(id); if(el!=null)el.parentNode.removeChild(el); var el = document.getElementById(id+\'_x\'); if(el!=null)el.parentNode.removeChild(el); var el = document.getElementById(id+\'_br\'); if(el!=null)el.parentNode.removeChild(el);}';
+  echo '</script>';*/
+  echo _7feed_get_javaScript();
+
   echo '<form method="post">';
   echo "<div class=\"wrap\"><h2>Default display options</h2>";
   echo '<table class="form-table">';
@@ -292,8 +380,15 @@ function wp_7feeds_options() {
   if( $options['open_new_window'] == "1" ){ echo ' checked="checked"'; }
   echo '></input></td></tr>';
   // Feed url
-  echo '<tr valign="top"><th scope="row">Feed URL</th>';
-  echo '<td><input type="text" name="feed_url" value="'.$options['feed_url'].'" size="60"></input></td></tr>';
+  echo '<tr valign="top"><th scope="row">Feed\'s URL</th>';
+  //echo '<td><input type="text" name="feed_url" value="'.$options['feed_url'].'" size="60"></input></td></tr>';
+  echo '<td>';
+  echo _7feed_multi_fields('feed_url', $options['feed_url'], 'size="60"', 'feed_url_id', false);
+  echo '</td></tr>';
+
+  // News order
+  echo '<tr valign="top"><th scope="row">News order</th>';
+  echo '<td><select name="news_order"><option value="0">Consistent</option><option value="1" '.($options['news_order']==1?'selected':'').'>Random</option></select></td></tr>';
 
   // Select theme
   echo '<tr valign="top"><th scope="row">Select theme</th>';
@@ -341,6 +436,108 @@ function wp_7feeds_options() {
 
 }
 
+function _7feed_get_javaScript() {
+  $cnt = '';
+  
+  $cnt .= '<script>';
+  
+  $cnt .= 'var _7feed_gen_id_number = 1;
+  function _7feeds_add_field(id){
+  var el = document.getElementById(id);
+  
+  var insBF = true;
+  var parent = document.getElementById(id+"_last_br");
+  if(parent == null) {
+    insBF = false;
+    parent = el;
+  }
+  
+  var clone = el.cloneNode(true);
+  clone.value="";
+  clone.id+="_script_"+_7feed_gen_id_number;
+  _7feed_gen_id_number++;
+  
+  var br_el = document.createElement("BR");
+  br_el.id = clone.id+"_br";
+  if(insBF) {
+    parent.parentNode.insertBefore(br_el, parent);
+    parent.parentNode.insertBefore(clone, parent);
+  }else {
+    parent.parentNode.appendChild(br_el);
+    parent.parentNode.appendChild(clone);
+  }
+  
+  var span_el = document.createElement("SPAN");
+  span_el.innerHTML = "&nbsp;";
+  span_el.id = clone.id+"_x";
+  
+  if(insBF) {
+    parent.parentNode.insertBefore(span_el, parent);
+  }else {
+    parent.parentNode.appendChild(span_el);
+  }
+  
+  var a_el = document.createElement("A");
+  a_el.innerHTML = "X";  
+  a_el.href = "javascript:_7feeds_rem_field(\'"+clone.id+"\'); ";
+  span_el.appendChild(a_el);
+  }';
+  
+  $cnt .= 'function _7feeds_rem_field(id){
+  var el = document.getElementById(id);
+  if(el!=null)el.parentNode.removeChild(el);
+  
+  var el = document.getElementById(id+\'_x\');
+  if(el!=null)el.parentNode.removeChild(el);
+  
+  var el = document.getElementById(id+\'_br\');
+  if(el!=null)el.parentNode.removeChild(el);
+  }';
+  
+  $cnt .= '</script>';  
+  
+  return $cnt;
+}
+
+function _7feed_multi_fields($name, $value, $action, $id, $br=true) {
+
+  $aTmp = array();
+  if (!empty($value)) {
+    $aTmp = unserialize($value);
+  }
+  
+  if (empty($aTmp) && !is_array($aTmp)){
+    $aTmp[] = $value;
+  }elseif (empty($aTmp)) {
+    $aTmp[] = '';
+  }
+
+  $cnt = '';
+  $i=0;
+  $c = count($aTmp);
+  for ($i=0; $i<$c; $i++) {
+    if ($i == 0) {
+      $el_id = $id;
+      //$action .= ' id="'.$id.'"';
+    }else {
+      $el_id = $id.'_'.$i;
+      //$action .= ' id="'.$id.'_'.'"';
+    }
+    
+    if ($br) {
+      $cnt .= '<BR  id="'.$el_id.'_br" />';
+    }
+    $br = true;
+    
+    $cnt .= '<input type="text" name="'.$name.'[]" value="'.$aTmp[$i].'" id="'.$el_id.'" />'.($i > 0?' <a href="javascript:_7feeds_rem_field(\''.$el_id.'\'); "  id="'.$el_id.'_x">X</a>':'');
+  }
+
+  //Add link
+  $cnt .= '<BR id="'.$id.'_last_br"><a href="javascript: _7feeds_add_field(\''.$id.'\');">Add more feeds</a>';
+
+  return $cnt;
+}
+
 //uninstall all options
 function wp_7feeds_uninstall () {
   delete_option('wp7feeds_options');
@@ -367,7 +564,7 @@ class WP_Widget_7feeds extends WP_Widget {
     endif;
 
     if( !stristr( $_SERVER['PHP_SELF'], 'widgets.php' ) ){
-      echo wp_7feeds_createflashcode(true,NULL,$options);
+      echo wp_7feeds_createflashcode(true, NULL, $options, $this->number);
     }
     echo $after_widget;
   }
@@ -386,7 +583,21 @@ class WP_Widget_7feeds extends WP_Widget {
     $newoptions['num_of_entries'] = strip_tags(stripslashes($_POST["wp7feeds_widget_num_of_entries"]));
     $newoptions['pause_time'] = strip_tags(stripslashes($_POST["wp7feeds_widget_pause_time"]));
     $newoptions['open_new_window'] = strip_tags(stripslashes($_POST["wp7feeds_widget_open_new_window"]));
-    $newoptions['feed_url'] = strip_tags(stripslashes($_POST["wp7feeds_widget_feed_url"]));
+
+    //$newoptions['feed_url'] = strip_tags(stripslashes($_POST["wp7feeds_widget_feed_url"]));
+    if (is_array($_POST["wp7feeds_widget_feed_url"])) {
+      $aTmp = array();
+      foreach ($_POST["wp7feeds_widget_feed_url"] as $val) {
+        if (empty($val)) continue;
+        $aTmp[] = strip_tags(stripslashes($val));
+      }
+      $newoptions['feed_url'] = serialize($aTmp);
+    }else {
+      $newoptions['feed_url'] = strip_tags(stripslashes($_POST["wp7feeds_widget_feed_url"]));
+    }
+
+    $newoptions['news_order'] = strip_tags(stripslashes($_POST["wp7feeds_widget_news_order"]));
+
     $newoptions['strip_tags'] = strip_tags(stripslashes($_POST["wp7feeds_widget_strip_tags"]));
     $newoptions['theme'] = strip_tags(stripslashes($_POST["wp7feeds_theme"]));
     $newoptions['widget_header'] = strip_tags(stripslashes($_POST["wp7feeds_widget_header"]));
@@ -415,7 +626,11 @@ class WP_Widget_7feeds extends WP_Widget {
     $num_of_entries = attribute_escape($options['num_of_entries']);
     $pause_time = attribute_escape($options['pause_time']);
     $open_new_window = attribute_escape($options['open_new_window']);
-    $feed_url = attribute_escape($options['feed_url']);
+
+    //$feed_url = attribute_escape($options['feed_url']);
+    $feed_url = $options['feed_url'];
+    $news_order = attribute_escape($options['news_order']);
+    
     $strip_tags = attribute_escape($options['strip_tags']);
     $theme = attribute_escape($options['theme']);
     $widget_header = attribute_escape($options['widget_header']);
@@ -423,6 +638,7 @@ class WP_Widget_7feeds extends WP_Widget {
     $pub_time = attribute_escape($options['pub_time']);
     $widget_title = attribute_escape($options['widget_title']);
 
+    echo _7feed_get_javaScript();
 		?>
 			<p><label for="wp7feeds_widget_x_size"><?php _e('Width (optional):'); ?> <input class="widefat" id="wp7feeds_widget_x_size" name="wp7feeds_widget_x_size" type="text" value="<?php echo $x_size; ?>" /></label></p>
 			<p><label for="wp7feeds_widget_y_size"><?php _e('Height (optional):'); ?> <input class="widefat" id="wp7feeds_widget_y_size" name="wp7feeds_widget_y_size" type="text" value="<?php echo $y_size; ?>" /></label></p>
@@ -431,7 +647,14 @@ class WP_Widget_7feeds extends WP_Widget {
 			<p><label for="wp7feeds_widget_num_of_entries"><?php _e('Number of items (optional):'); ?> <input class="widefat" id="wp7feeds_widget_num_of_entries" name="wp7feeds_widget_num_of_entries" type="text" value="<?php echo $num_of_entries; ?>" /></label></p>
 			<p><label for="wp7feeds_widget_pause_time"><?php _e('Pause time (optional):'); ?> <input class="widefat" id="wp7feeds_widget_pause_time" name="wp7feeds_widget_pause_time" type="text" value="<?php echo $pause_time; ?>" /></label></p>
 			<p><label for="wp7feeds_widget_open_new_window"><input class="checkbox" id="wp7feeds_widget_open_new_window" name="wp7feeds_widget_open_new_window" type="checkbox" value="1" <?php if( $open_new_window == "1" ){ echo ' checked="checked"'; } ?> > Open link in new window</label></p>
-			<p><label for="wp7feeds_widget_feed_url"><?php _e('Feed URL (optional):'); ?> <input class="widefat" id="wp7feeds_widget_feed_url" name="wp7feeds_widget_feed_url" type="text" value="<?php echo $feed_url; ?>" /></label></p>
+			
+			<p><?php _e('Feed\'s URL (optional):'); echo _7feed_multi_fields('wp7feeds_widget_feed_url', $feed_url, ' class="widefat"', $this->id.'feed_url');?></p>
+			<p><?php _e('News order (optional):');?>
+			 <select name="wp7feeds_widget_news_order">
+			   <option value="0">Consistent</option>
+			   <option value="1" <? if( $news_order == 1 ){ echo 'selected'; } ?>>Random</option>
+			 </select>
+			</p>
 			
 			<p><?php _e('Select theme:');  echo wp_7feeds_get_theme_select('wp7feeds_theme',$theme)?></p>
 			
@@ -452,7 +675,10 @@ class WP_Widget_7feeds extends WP_Widget {
 ### Function: Init WP-Polls Widget
 add_action('widgets_init', 'widget_7feeds_init');
 function widget_7feeds_init() {
-  register_widget('WP_Widget_7feeds');
+
+  if ($GLOBALS['7FEEDS_ACTIVE'] === true) {
+    register_widget('WP_Widget_7feeds');
+  }
 }
 /*** CLASS ***/
 

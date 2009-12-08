@@ -253,6 +253,17 @@ function xmGetTagValues($array) {
           break;
 
         case 'description':
+          $i=0;
+          while (true) {
+            $aTmp = array();
+            if (!preg_match_all('/(&[\S]{2,6};)/iUm', $val, $aTmp) || $i > 10) {
+              break;
+            }else {
+              $val = html_entity_decode($val,ENT_NOQUOTES,'UTF-8');
+              $i++;
+              continue;
+            }
+          }
           //$val = strip_tags_attributes($val,'<a>,<b>,<br>,<font>,<i>,<li>,<p>,<span>,<textformat>,<u>',array('height','alt','width','clear','size','class','border','style'));
           $val = strip_tags_attributes($val,'<a>,<b>,<font>,<i>,<li>,<p>,<span>,<textformat>,<u>',array('height','alt','width','clear','size','class','border','style'));
           break;
@@ -428,7 +439,6 @@ function xmParseFeedArray($aFeed) {
       break;
     }
   }
-
   if (empty($aItems)) {
     foreach ($aChannel as $key=>$val) {
       if (_in_array($key, $aItemParentTags['item'])) {
@@ -440,8 +450,14 @@ function xmParseFeedArray($aFeed) {
 
   $aChannel = xmGetTagValues($aChannel);
 
-  foreach ($aItems as $key=>$val) {
-    $aItems[$key] = xmGetTagValues($val);
+  if (isset($aItems[0])) {
+    foreach ($aItems as $key=>$val) {
+      $aItems[$key] = xmGetTagValues($val);
+    }
+  }else {
+    $aTmp = $aItems;
+    $aItems = array();
+    $aItems[0] = xmGetTagValues($aTmp);
   }
 
   return array($aChannel,$aItems);
