@@ -36,11 +36,11 @@ An answer to that question.
 == Changelog ==
 
 = Version 1.04 =
-New features:
+* New features:
 * Mixing feeds (now you can add several feeds into one widget and mix the news items by your choice)
 * Added server configuration validator (PHP extensions check)
 
-Bug fixes:
+* Bug fixes:
 * Fixed problem with html special chars in feeds
 
 = Version 1.03 =
