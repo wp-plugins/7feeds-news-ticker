@@ -672,7 +672,7 @@ class WP_Widget_7feeds extends WP_Widget {
   }
 }
 
-### Function: Init WP-Polls Widget
+### Function: Init 7feeds Widget
 add_action('widgets_init', 'widget_7feeds_init');
 function widget_7feeds_init() {
 
