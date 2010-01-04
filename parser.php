@@ -23,7 +23,7 @@ include('functions.inc.php');
 //Limit items
 $tLimit = 20;
 
-$url = isset($HTTP_GET_VARS['link'])?$HTTP_GET_VARS['link']:'';
+$url = isset($HTTP_GET_VARS['link'])?$HTTP_GET_VARS['link']:isset($_GET['link'])?$_GET['link']:'';
 
 if ((int)$url != 0) {
 
