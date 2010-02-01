@@ -35,6 +35,9 @@ An answer to that question.
 
 == Changelog ==
 
+= Version 1.05 =
+* Added new settings: rounded corners, title length limit
+
 = Version 1.04.1 =
 * Tested in version 2.9
 

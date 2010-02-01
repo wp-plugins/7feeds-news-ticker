@@ -3,7 +3,7 @@
 Plugin Name: 7feeds ticker
 Plugin URI: http://7feeds.com
 Description: Flash based RSS ticker widget for WordPress. <a href="http://7feeds.com">Visit widget page</a> for more information.
-Version: 1.04.1
+Version: 1.05
 Author: IOIX Ukraine
 Author URI: http://ioix.com.ua
 
@@ -91,6 +91,7 @@ function wp_7feeds_install () {
   $newoptions['x_size'] = '180';
   $newoptions['y_size'] = '320';
   $newoptions['summary_length'] = '300';
+  $newoptions['title_length'] = '100';
   $newoptions['scroll_speed'] = '50';
   $newoptions['num_of_entries'] = '5';
   $newoptions['pause_time'] = '3000';
@@ -103,6 +104,7 @@ function wp_7feeds_install () {
   $newoptions['pub_time'] = '1';
   $newoptions['widget_title'] = '';
   $newoptions['widget_promote'] = '1';
+  $newoptions['rounded_corners'] = '1';
 
   add_option('wp7feeds_options', $newoptions);
 }
@@ -167,7 +169,7 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
   }
   
   //Check box fields
-  $aF = array('open_new_window','strip_tags','widget_header','news_content','pub_time');
+  $aF = array('open_new_window','strip_tags','widget_header','news_content','pub_time','pause_time');
   $atOptions = get_option('wp7feeds_options');
   foreach ($atOptions as $key=>$val) {
     if (empty($options[$key])) {
@@ -214,6 +216,7 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
   $flashCode .= 'so.addVariable("feed_highlight","'.wp_7feeds_get_theme_color($options['theme'], 'feed_highlight').'");';
   $flashCode .= 'so.addVariable("border_color","'.wp_7feeds_get_theme_color($options['theme'], 'border_color').'");';
   $flashCode .= 'so.addVariable("summary_length","'.$options['summary_length'].'");';
+  $flashCode .= 'so.addVariable("title_length","'.$options['title_length'].'");';
   $flashCode .= 'so.addVariable("scroll_speed","'.$options['scroll_speed'].'");';
   $flashCode .= 'so.addVariable("item_spacing","12");';
   $flashCode .= 'so.addVariable("scroll_buttons","1");';
@@ -226,7 +229,7 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
   $flashCode .= 'so.addVariable("show_body","'.$options['widget_header'].'");';
   $flashCode .= 'so.addVariable("show_entry_copyright","0");';
   $flashCode .= 'so.addVariable("show_footer","0");';
-  $flashCode .= 'so.addVariable("use_rounded_corners","1");';
+  $flashCode .= 'so.addVariable("use_rounded_corners","'.$options['rounded_corners'].'");';
   $flashCode .= 'so.addVariable("open_new_window","'.$options['open_new_window'].'");';
   $flashCode .= 'so.addVariable("show_url_field","0");';
   $flashCode .= 'so.addVariable("data_url","'._7FEEDS_PATH.'parser.php");';
@@ -316,6 +319,7 @@ function wp_7feeds_options() {
     $newoptions['x_size'] = strip_tags(stripslashes($_POST["x_size"]));
     $newoptions['y_size'] = strip_tags(stripslashes($_POST["y_size"]));
     $newoptions['summary_length'] = strip_tags(stripslashes($_POST["summary_length"]));
+    $newoptions['title_length'] = strip_tags(stripslashes($_POST["title_length"]));
     $newoptions['scroll_speed'] = strip_tags(stripslashes($_POST["scroll_speed"]));
     $newoptions['num_of_entries'] = strip_tags(stripslashes($_POST["num_of_entries"]));
     $newoptions['pause_time'] = strip_tags(stripslashes($_POST["pause_time"]));
@@ -340,6 +344,7 @@ function wp_7feeds_options() {
     $newoptions['pub_time'] = strip_tags(stripslashes($_POST["pub_time"]));
     $newoptions['widget_title'] = strip_tags(stripslashes($_POST["widget_title"]));
     $newoptions['widget_promote'] = strip_tags(stripslashes($_POST["widget_promote"]));
+    $newoptions['rounded_corners'] = $_POST["rounded_corners"];
   }
   // any changes? save!
   if ( $options != $newoptions ) {
@@ -365,6 +370,11 @@ function wp_7feeds_options() {
   // text length
   echo '<tr valign="top"><th scope="row">News item length, chars</th>';
   echo '<td><input type="text" name="summary_length" value="'.$options['summary_length'].'" size="5"></input></td></tr>';
+  
+  // title length
+  echo '<tr valign="top"><th scope="row">News title length, chars</th>';
+  echo '<td><input type="text" name="title_length" value="'.$options['title_length'].'" size="5"></input></td></tr>';
+  
   // Scroll Speed
   echo '<tr valign="top"><th scope="row">Scrolling speed</th>';
   echo '<td><input type="text" name="scroll_speed" value="'.$options['scroll_speed'].'" size="3"></input></td></tr>';
@@ -373,7 +383,7 @@ function wp_7feeds_options() {
   echo '<td><input type="text" name="num_of_entries" value="'.$options['num_of_entries'].'" size="3"></input></td></tr>';
   // Pause time
   echo '<tr valign="top"><th scope="row">Pause time</th>';
-  echo '<td><input type="text" name="pause_time" value="'.$options['pause_time'].'" size="6"></input></td></tr>';
+  echo '<td><input type="text" name="pause_time" value="'.$options['pause_time'].'" size="6"></input> Set 0 to disable pausing</td></tr>';
   // Open in new window
   echo '<tr valign="top"><th scope="row">Open links in new windows</th>';
   echo '<td><input type="checkbox" name="open_new_window" value="1"';
@@ -393,6 +403,12 @@ function wp_7feeds_options() {
   // Select theme
   echo '<tr valign="top"><th scope="row">Select theme</th>';
   echo '<td>'.wp_7feeds_get_theme_select('theme',$options['theme']).'</td></tr>';
+  
+  // Corners
+  echo '<tr valign="top"><th scope="row">Rounded corners</th>';
+  echo '<td><input type="checkbox" name="rounded_corners" value="1"';
+  if( $options['rounded_corners'] == "1" ){ echo ' checked="checked"'; }
+  echo '></input></td></tr>';
 
   //widget header
   echo '<tr valign="top"><th scope="row">Widget header</th>';
@@ -579,6 +595,7 @@ class WP_Widget_7feeds extends WP_Widget {
     $newoptions['x_size'] = strip_tags(stripslashes($_POST["wp7feeds_widget_x_size"]));
     $newoptions['y_size'] = strip_tags(stripslashes($_POST["wp7feeds_widget_y_size"]));
     $newoptions['summary_length'] = strip_tags(stripslashes($_POST["wp7feeds_widget_summary_length"]));
+    $newoptions['title_length'] = strip_tags(stripslashes($_POST["wp7feeds_widget_title_length"]));
     $newoptions['scroll_speed'] = strip_tags(stripslashes($_POST["wp7feeds_widget_scroll_speed"]));
     $newoptions['num_of_entries'] = strip_tags(stripslashes($_POST["wp7feeds_widget_num_of_entries"]));
     $newoptions['pause_time'] = strip_tags(stripslashes($_POST["wp7feeds_widget_pause_time"]));
@@ -604,6 +621,7 @@ class WP_Widget_7feeds extends WP_Widget {
     $newoptions['news_content'] = strip_tags(stripslashes($_POST["wp7feeds_news_content"]));
     $newoptions['pub_time'] = strip_tags(stripslashes($_POST["wp7feeds_pub_time"]));
     $newoptions['widget_title'] = strip_tags(stripslashes($_POST["wp7feeds_widget_title"]));
+    $newoptions['rounded_corners'] = strip_tags(stripslashes($_POST["wp7feeds_rounded_corners"]));
 
     return $newoptions;
   }
@@ -622,6 +640,7 @@ class WP_Widget_7feeds extends WP_Widget {
     $x_size = attribute_escape($options['x_size']);
     $y_size = attribute_escape($options['y_size']);
     $summary_length = attribute_escape($options['summary_length']);
+    $title_length = attribute_escape($options['title_length']);
     $scroll_speed = attribute_escape($options['scroll_speed']);
     $num_of_entries = attribute_escape($options['num_of_entries']);
     $pause_time = attribute_escape($options['pause_time']);
@@ -637,12 +656,14 @@ class WP_Widget_7feeds extends WP_Widget {
     $news_content = attribute_escape($options['news_content']);
     $pub_time = attribute_escape($options['pub_time']);
     $widget_title = attribute_escape($options['widget_title']);
+    $rounded_corners = attribute_escape($options['rounded_corners']);
 
     echo _7feed_get_javaScript();
 		?>
 			<p><label for="wp7feeds_widget_x_size"><?php _e('Width (optional):'); ?> <input class="widefat" id="wp7feeds_widget_x_size" name="wp7feeds_widget_x_size" type="text" value="<?php echo $x_size; ?>" /></label></p>
 			<p><label for="wp7feeds_widget_y_size"><?php _e('Height (optional):'); ?> <input class="widefat" id="wp7feeds_widget_y_size" name="wp7feeds_widget_y_size" type="text" value="<?php echo $y_size; ?>" /></label></p>
 			<p><label for="wp7feeds_widget_summary_length"><?php _e('Item length (optional):'); ?> <input class="widefat" id="wp7feeds_widget_summary_length" name="wp7feeds_widget_summary_length" type="text" value="<?php echo $summary_length; ?>" /></label></p>
+			<p><label for="wp7feeds_widget_title_length"><?php _e('Title length (optional):'); ?> <input class="widefat" id="wp7feeds_widget_title_length" name="wp7feeds_widget_title_length" type="text" value="<?php echo $title_length; ?>" /></label></p>
 			<p><label for="wp7feeds_widget_scroll_speed"><?php _e('Scrolling speed (optional):'); ?> <input class="widefat" id="wp7feeds_widget_scroll_speed" name="wp7feeds_widget_scroll_speed" type="text" value="<?php echo $scroll_speed; ?>" /></label></p>
 			<p><label for="wp7feeds_widget_num_of_entries"><?php _e('Number of items (optional):'); ?> <input class="widefat" id="wp7feeds_widget_num_of_entries" name="wp7feeds_widget_num_of_entries" type="text" value="<?php echo $num_of_entries; ?>" /></label></p>
 			<p><label for="wp7feeds_widget_pause_time"><?php _e('Pause time (optional):'); ?> <input class="widefat" id="wp7feeds_widget_pause_time" name="wp7feeds_widget_pause_time" type="text" value="<?php echo $pause_time; ?>" /></label></p>
@@ -657,6 +678,8 @@ class WP_Widget_7feeds extends WP_Widget {
 			</p>
 			
 			<p><?php _e('Select theme:');  echo wp_7feeds_get_theme_select('wp7feeds_theme',$theme)?></p>
+			
+			<p><label for="wp7feeds_rounded_corners"><input class="checkbox" id="wp7feeds_rounded_corners" name="wp7feeds_rounded_corners" type="checkbox" value="1" <?php if( $rounded_corners == "1" ){ echo ' checked="checked"'; } ?> > Rounded corners</label></p>
 			
 			<p><label for="wp7feeds_widget_header"><input class="checkbox" id="wp7feeds_widget_header" name="wp7feeds_widget_header" type="checkbox" value="1" <?php if( $widget_header == "1" ){ echo ' checked="checked"'; } ?> > Widget header</label></p>
 			<p><label for="wp7feeds_news_content"><input class="checkbox" id="wp7feeds_news_content" name="wp7feeds_news_content" type="checkbox" value="1" <?php if( $news_content == "1" ){ echo ' checked="checked"'; } ?> > News content</label></p>
