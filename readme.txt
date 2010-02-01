@@ -4,7 +4,7 @@ Donate link: http://7feeds.com/blog/
 Tags: 7feeds, flash, ticker, wordpress, rss, plugin, widget, free, feed, news, support, contact form, themes, colors, titles, scrolling, settings, sidebar, vertical, website, add rss, plugin blog, color, WP, ioix ukraine
 Requires at least: 2.8
 Tested up to: 2.9
-Stable tag: 1.04.1
+Stable tag: 1.05
 
 == Description ==
 

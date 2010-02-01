@@ -169,8 +169,9 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
   }
   
   //Check box fields
-  $aF = array('open_new_window','strip_tags','widget_header','news_content','pub_time','pause_time');
+  $aF = array('open_new_window','strip_tags','widget_header','news_content','pub_time','pause_time','rounded_corners');
   $atOptions = get_option('wp7feeds_options');
+  
   foreach ($atOptions as $key=>$val) {
     if (empty($options[$key])) {
       if (!in_array($key,$aF)) {
