@@ -30,12 +30,12 @@ if ((int)$url != 0) {
   //Include wp config
   require("../../../wp-config.php");
   $aTmp = get_option('widget_7feeds-widget');
-  
+
   if (isset($aTmp[$url])) {
     $gNewsOrder = $aTmp[$url]['news_order'];
     $url = unserialize($aTmp[$url]['feed_url']);
   }
-  
+
   //Default value
   if (empty($url)) {
     $aTmp = get_option('wp7feeds_options');
@@ -127,6 +127,9 @@ foreach ($aFeedUrls as $url) {
       $return=substr($return, $pos);
     }
   }
+
+  //Convert htmlspecialchars
+  $return = utf8_html_entity_decode($return);
 
   $return=preg_replace("/<img[^>]*>/i", '', $return);
   list($aChannel, $aFeed) = xmParseFeedArray(basexml2array($return));

@@ -3,8 +3,8 @@ Contributors: IOIX Ukraine
 Donate link: http://7feeds.com/blog/
 Tags: 7feeds, flash, ticker, wordpress, rss, plugin, widget, free, feed, news, support, contact form, themes, colors, titles, scrolling, settings, sidebar, vertical, website, add rss, plugin blog, color, WP, ioix ukraine
 Requires at least: 2.8
-Tested up to: 2.9
-Stable tag: 1.05
+Tested up to: 2.9.2
+Stable tag: 1.05.1
 
 == Description ==
 
@@ -34,6 +34,10 @@ An answer to that question.
 2. Default widget options.
 
 == Changelog ==
+
+= Version 1.05.1 =
+* Fixed RSS parser
+* Tested in version 2.9.2
 
 = Version 1.05 =
 * Added new settings: rounded corners, title length limit

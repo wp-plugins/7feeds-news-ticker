@@ -464,13 +464,25 @@ function xmParseFeedArray($aFeed) {
 }
 /*=========================================*/
 
-function _in_array($search, $array) {
+function _in_array($search, $array, $first_check = true) {
 
+  $re_check = false;
   foreach ($array as $val) {
     if (strpos($search,$val) !== false) {
-      return true;
+      
+      if (strpos($search,$val) == 0 && $first_check) {
+        return true;
+      }else {
+        $re_check = true;
+      }
+      
     }
   }
+  
+  if ($re_check && $first_check) {
+    return _in_array($search, $array, false);
+  }
+  
   return false;
 }
 /*=========================================*/
@@ -1380,6 +1392,25 @@ function dtGetDayLightSave($tunix=0){
   $DLST = $DLST*3600;
 
   return $DLST;
+}
+/*=========================================*/
+
+function utf8_replaceEntity($result){
+  $value = (int)$result[1];
+  $string = '';
+  $len = round(pow($value,1/8));
+  for($i=$len;$i>0;$i--){
+    $part = ($value & (255>>2)) | pow(2,7);
+    if ( $i == 1 ) $part |= 255<<(8-$len);
+    $string = chr($part) . $string;
+    $value >>= 6;
+  }
+  return $string;
+}
+/*=========================================*/
+
+function utf8_html_entity_decode($string){
+  return preg_replace_callback('/&#([0-9]+);/u','utf8_replaceEntity',$string);
 }
 /*=========================================*/
 ?>
