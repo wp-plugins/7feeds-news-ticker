@@ -4,7 +4,7 @@ Donate link: http://7feeds.com/blog/
 Tags: 7feeds, flash, ticker, wordpress, rss, plugin, widget, free, feed, news, support, contact form, themes, colors, titles, scrolling, settings, sidebar, vertical, website, add rss, plugin blog, color, WP, ioix ukraine
 Requires at least: 2.8
 Tested up to: 2.9.2
-Stable tag: 1.05.1
+Stable tag: 1.06
 
 == Description ==
 
@@ -19,7 +19,7 @@ scrolling settings. Loads immediately and works smoothly. Enjoy!
 1. Upload the 'wp-7feeds' folder to your plugins directory (wp-content/plugins/).
 2. Activate the plugin through the 'plugins' page in WP.
 3. See 'Options->7feeds ticker' to adjust default options
-4. Go to 'Apperance->Widgets', add widget to 'Sidebar'
+4. Go to 'Apperance->Widgets', add widget to 'Sidebar' or you can add shortcode [wp-7feeds], more info you can find in 7feeds ticker page
 5. You can change an options individually for each ticker widget on sidebar
 
 == Frequently Asked Questions ==
@@ -34,6 +34,9 @@ An answer to that question.
 2. Default widget options.
 
 == Changelog ==
+
+= Version 1.06 =
+* Added shortcode [wp-7feeds]
 
 = Version 1.05.1 =
 * Fixed RSS parser

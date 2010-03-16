@@ -3,7 +3,7 @@
 Plugin Name: 7feeds ticker
 Plugin URI: http://7feeds.com
 Description: Flash based RSS ticker widget for WordPress. <a href="http://7feeds.com">Visit widget page</a> for more information.
-Version: 1.05.1
+Version: 1.06
 Author: IOIX Ukraine
 Author URI: http://ioix.com.ua
 
@@ -142,7 +142,7 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
   if ($GLOBALS['7FEEDS_ACTIVE'] === false) {
     return '';
   }
-  
+
   if (!isset($aWidgetIds)) {
     $aWidgetIds = array();
   }
@@ -161,17 +161,33 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
   //Get options
   if ($widget && !empty($widget_options)) {
     $options = $widget_options;
+  }elseif (!$widget && !empty($atts)) {
+    $options = $atts;
   }
 
-  $aTmp = unserialize($options['feed_url']);
-  if (empty($aTmp)) {
-    $options['feed_url'] = '';
+  if (is_array($options['feed_url'])) {
+    $aTmp = unserialize($options['feed_url']);
+    if (empty($aTmp)) {
+      $options['feed_url'] = '';
+    }
+  }else {
+    $options['feed_url'] = serialize(array($options['feed_url']));
   }
-  
+
   //Check box fields
   $aF = array('open_new_window','strip_tags','widget_header','news_content','pub_time','pause_time','rounded_corners');
+
+  if (!$widget) {
+    foreach ($aF as $key=>$val) {
+      if (!isset($options[$val])) {
+        unset($aF[$key]);
+      }
+    }
+    sort($aF);
+  }
+
   $atOptions = get_option('wp7feeds_options');
-  
+
   foreach ($atOptions as $key=>$val) {
     if (empty($options[$key])) {
       if (!in_array($key,$aF)) {
@@ -185,12 +201,14 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
       $options[$key] = $val;
     }
   }
-  
+
   $aTmp = unserialize($options['feed_url']);
   if (!empty($widgetId) && is_array($aTmp) && !empty($aTmp)) {
     $options['feed_url'] = $widgetId;
+  }elseif (is_array($aTmp) && !empty($aTmp)) {
+    $options['feed_url'] = $aTmp[0];
   }
-  
+
   $flashCode = '';
 
   $flashCode .= '<div id="wp-7feeds-flash_'.$num.'"></div>';
@@ -353,14 +371,58 @@ function wp_7feeds_options() {
     update_option('wp7feeds_options', $options);
   }
   // options form
-  /*echo '<script>';
-  echo 'function _7feeds_add_field(id){var el = document.getElementById(id); var clone = el.cloneNode(true); clone.value=""; clone.id=""; el.parentNode.appendChild(document.createElement("BR")); el.parentNode.appendChild(clone);}';
-  echo 'function _7feeds_rem_field(id){var el = document.getElementById(id); if(el!=null)el.parentNode.removeChild(el); var el = document.getElementById(id+\'_x\'); if(el!=null)el.parentNode.removeChild(el); var el = document.getElementById(id+\'_br\'); if(el!=null)el.parentNode.removeChild(el);}';
-  echo '</script>';*/
   echo _7feed_get_javaScript();
 
   echo '<form method="post">';
   echo "<div class=\"wrap\"><h2>Default display options</h2>";
+
+  ?>
+  
+  <script>
+  function _7feedsCollapse() {
+
+    var el = document.getElementById('_help');
+    if(el != null) {
+      var s = (el.style.display == 'none'?1:0);
+      el.style.display = (s==1?'':'none');
+
+      /*var el = document.getElementById('collapse');
+      if(el != null) {
+      el.innerHTML = (s==1?'-':'+');
+      }*/
+    }
+  }
+  </script>
+  
+  <span style="cursor: pointer;" onclick="_7feedsCollapse();">You can use wp shortcodes [wp-7feeds]. Click here to show shortcode parameters >></span><br>
+  <div class="updated fade" style="display: none;" id="_help">
+  <b>Shortcode:</b><br>
+  [wp-7feeds parameters]<br><br>
+  
+  <b>Parameters:</b><br>
+  [x_size = "180"]<br>
+  [y_size = "320"]<br>
+  [summary_length = "300"]<br>
+  [title_length = "100"]<br>
+  [scroll_speed = "50"]<br>
+  [num_of_entries = "5"]<br>
+  [pause_time = "3000"]<br>
+  [open_new_window = "1"]<br>
+  [feed_url = "http://news.bbc.co.uk/"]<br>
+  [strip_tags = "0"]<br>
+  [theme = "0"] - values {from 0 to 8}<br>
+  [widget_header = "1"]<br>
+  [news_content = "1"]<br>
+  [pub_time = "1"]<br>
+  [widget_title = 1]<br>
+  [widget_promote = "1"]<br>
+  [rounded_corners = "1"]<br><br>
+  
+  <b>Example:</b><br>
+  [wp-7feeds feed_url = "http://news.bbc.co.uk/" pub_time = "1" rounded_corners = "1" theme = "2"]<br><br>
+  </div>
+  <?php
+
   echo '<table class="form-table">';
   // width
   echo '<tr valign="top"><th scope="row">Width of the widget</th>';
@@ -371,11 +433,11 @@ function wp_7feeds_options() {
   // text length
   echo '<tr valign="top"><th scope="row">News item length, chars</th>';
   echo '<td><input type="text" name="summary_length" value="'.$options['summary_length'].'" size="5"></input></td></tr>';
-  
+
   // title length
   echo '<tr valign="top"><th scope="row">News title length, chars</th>';
   echo '<td><input type="text" name="title_length" value="'.$options['title_length'].'" size="5"></input></td></tr>';
-  
+
   // Scroll Speed
   echo '<tr valign="top"><th scope="row">Scrolling speed</th>';
   echo '<td><input type="text" name="scroll_speed" value="'.$options['scroll_speed'].'" size="3"></input></td></tr>';
@@ -404,7 +466,7 @@ function wp_7feeds_options() {
   // Select theme
   echo '<tr valign="top"><th scope="row">Select theme</th>';
   echo '<td>'.wp_7feeds_get_theme_select('theme',$options['theme']).'</td></tr>';
-  
+
   // Corners
   echo '<tr valign="top"><th scope="row">Rounded corners</th>';
   echo '<td><input type="checkbox" name="rounded_corners" value="1"';
@@ -455,9 +517,9 @@ function wp_7feeds_options() {
 
 function _7feed_get_javaScript() {
   $cnt = '';
-  
+
   $cnt .= '<script>';
-  
+
   $cnt .= 'var _7feed_gen_id_number = 1;
   function _7feeds_add_field(id){
   var el = document.getElementById(id);
@@ -499,7 +561,7 @@ function _7feed_get_javaScript() {
   a_el.href = "javascript:_7feeds_rem_field(\'"+clone.id+"\'); ";
   span_el.appendChild(a_el);
   }';
-  
+
   $cnt .= 'function _7feeds_rem_field(id){
   var el = document.getElementById(id);
   if(el!=null)el.parentNode.removeChild(el);
@@ -510,9 +572,9 @@ function _7feed_get_javaScript() {
   var el = document.getElementById(id+\'_br\');
   if(el!=null)el.parentNode.removeChild(el);
   }';
-  
-  $cnt .= '</script>';  
-  
+
+  $cnt .= '</script>';
+
   return $cnt;
 }
 
@@ -522,7 +584,7 @@ function _7feed_multi_fields($name, $value, $action, $id, $br=true) {
   if (!empty($value)) {
     $aTmp = unserialize($value);
   }
-  
+
   if (empty($aTmp) && !is_array($aTmp)){
     $aTmp[] = $value;
   }elseif (empty($aTmp)) {
@@ -540,12 +602,12 @@ function _7feed_multi_fields($name, $value, $action, $id, $br=true) {
       $el_id = $id.'_'.$i;
       //$action .= ' id="'.$id.'_'.'"';
     }
-    
+
     if ($br) {
       $cnt .= '<BR  id="'.$el_id.'_br" />';
     }
     $br = true;
-    
+
     $cnt .= '<input type="text" name="'.$name.'[]" value="'.$aTmp[$i].'" id="'.$el_id.'" />'.($i > 0?' <a href="javascript:_7feeds_rem_field(\''.$el_id.'\'); "  id="'.$el_id.'_x">X</a>':'');
   }
 
@@ -650,7 +712,7 @@ class WP_Widget_7feeds extends WP_Widget {
     //$feed_url = attribute_escape($options['feed_url']);
     $feed_url = $options['feed_url'];
     $news_order = attribute_escape($options['news_order']);
-    
+
     $strip_tags = attribute_escape($options['strip_tags']);
     $theme = attribute_escape($options['theme']);
     $widget_header = attribute_escape($options['widget_header']);
