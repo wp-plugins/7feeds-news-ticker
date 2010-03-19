@@ -3,7 +3,7 @@
 Plugin Name: 7feeds ticker
 Plugin URI: http://7feeds.com
 Description: Flash based RSS ticker widget for WordPress. <a href="http://7feeds.com">Visit widget page</a> for more information.
-Version: 1.06
+Version: 1.06.1
 Author: IOIX Ukraine
 Author URI: http://ioix.com.ua
 
@@ -685,6 +685,7 @@ class WP_Widget_7feeds extends WP_Widget {
     $newoptions['pub_time'] = strip_tags(stripslashes($_POST["wp7feeds_pub_time"]));
     $newoptions['widget_title'] = strip_tags(stripslashes($_POST["wp7feeds_widget_title"]));
     $newoptions['rounded_corners'] = strip_tags(stripslashes($_POST["wp7feeds_rounded_corners"]));
+    $newoptions['title'] = strip_tags(stripslashes($_POST["wp7feeds_title"]));
 
     return $newoptions;
   }
@@ -720,9 +721,11 @@ class WP_Widget_7feeds extends WP_Widget {
     $pub_time = attribute_escape($options['pub_time']);
     $widget_title = attribute_escape($options['widget_title']);
     $rounded_corners = attribute_escape($options['rounded_corners']);
+    $title = attribute_escape($options['title']);
 
     echo _7feed_get_javaScript();
 		?>
+			<p><label for="wp7feeds_title"><?php _e('Title (optional):'); ?> <input class="widefat" id="wp7feeds_title" name="wp7feeds_title" type="text" value="<?php echo $title; ?>" /></label></p>
 			<p><label for="wp7feeds_widget_x_size"><?php _e('Width (optional):'); ?> <input class="widefat" id="wp7feeds_widget_x_size" name="wp7feeds_widget_x_size" type="text" value="<?php echo $x_size; ?>" /></label></p>
 			<p><label for="wp7feeds_widget_y_size"><?php _e('Height (optional):'); ?> <input class="widefat" id="wp7feeds_widget_y_size" name="wp7feeds_widget_y_size" type="text" value="<?php echo $y_size; ?>" /></label></p>
 			<p><label for="wp7feeds_widget_summary_length"><?php _e('Item length (optional):'); ?> <input class="widefat" id="wp7feeds_widget_summary_length" name="wp7feeds_widget_summary_length" type="text" value="<?php echo $summary_length; ?>" /></label></p>

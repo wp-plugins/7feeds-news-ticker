@@ -4,7 +4,7 @@ Donate link: http://7feeds.com/blog/
 Tags: 7feeds, flash, ticker, wordpress, rss, plugin, widget, free, feed, news, support, contact form, themes, colors, titles, scrolling, settings, sidebar, vertical, website, add rss, plugin blog, color, WP, ioix ukraine
 Requires at least: 2.8
 Tested up to: 2.9.2
-Stable tag: 1.06
+Stable tag: 1.06.1
 
 == Description ==
 
@@ -34,6 +34,9 @@ An answer to that question.
 2. Default widget options.
 
 == Changelog ==
+
+= Version 1.06.1 =
+* Added widget title for sidebar
 
 = Version 1.06 =
 * Added shortcode [wp-7feeds]
