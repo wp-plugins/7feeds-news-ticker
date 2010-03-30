@@ -3,7 +3,7 @@
 Plugin Name: 7feeds ticker
 Plugin URI: http://7feeds.com
 Description: Flash based RSS ticker widget for WordPress. <a href="http://7feeds.com">Visit widget page</a> for more information.
-Version: 1.06.1
+Version: 1.06.2
 Author: IOIX Ukraine
 Author URI: http://ioix.com.ua
 
@@ -164,19 +164,25 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
   }elseif (!$widget && !empty($atts)) {
     $options = $atts;
   }
-
-  if (is_array($options['feed_url'])) {
+  
+  if (!is_array($options['feed_url']) && unserialize($options['feed_url']) !== false) {
     $aTmp = unserialize($options['feed_url']);
     if (empty($aTmp)) {
       $options['feed_url'] = '';
     }
+  }elseif (is_array($options['feed_url'])) {
+    $options['feed_url'] = serialize($options['feed_url']);
   }else {
     $options['feed_url'] = serialize(array($options['feed_url']));
   }
 
   //Check box fields
   $aF = array('open_new_window','strip_tags','widget_header','news_content','pub_time','pause_time','rounded_corners');
-
+  
+  if (isset($options['widget_promote'])) {
+    unset($options['widget_promote']);
+  }
+  
   if (!$widget) {
     foreach ($aF as $key=>$val) {
       if (!isset($options[$val])) {
@@ -201,14 +207,14 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
       $options[$key] = $val;
     }
   }
-
+  
   $aTmp = unserialize($options['feed_url']);
   if (!empty($widgetId) && is_array($aTmp) && !empty($aTmp)) {
     $options['feed_url'] = $widgetId;
   }elseif (is_array($aTmp) && !empty($aTmp)) {
     $options['feed_url'] = $aTmp[0];
   }
-
+  
   $flashCode = '';
 
   $flashCode .= '<div id="wp-7feeds-flash_'.$num.'"></div>';
