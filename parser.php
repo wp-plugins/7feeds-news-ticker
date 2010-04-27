@@ -17,6 +17,8 @@ $gUTC=0;                                        //Server's UTC (estimated in sec
 /** @global integer $gNewsOrder */
 $gNewsOrder=1;                                  //1 - random, 0 - Consistent
 
+$gDateTemplate = 'l, d F, Y H:i';
+
 //Include functions
 include('functions.inc.php');
 
@@ -42,6 +44,11 @@ if ((int)$url != 0) {
     $gNewsOrder = $aTmp['news_order'];
     $url = unserialize($aTmp['feed_url']);
   }
+}
+
+$aTmp = get_option('wp7feeds_options');
+if (isset($aTmp['date_format'])) {
+  $gDateTemplate = $aTmp['date_format'];
 }
 
 $aFeedUrls = array();

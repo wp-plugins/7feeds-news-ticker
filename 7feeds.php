@@ -3,7 +3,7 @@
 Plugin Name: 7feeds ticker
 Plugin URI: http://7feeds.com
 Description: Flash based RSS ticker widget for WordPress. <a href="http://7feeds.com">Visit widget page</a> for more information.
-Version: 1.06.2
+Version: 1.07
 Author: IOIX Ukraine
 Author URI: http://ioix.com.ua
 
@@ -105,6 +105,7 @@ function wp_7feeds_install () {
   $newoptions['widget_title'] = '';
   $newoptions['widget_promote'] = '1';
   $newoptions['rounded_corners'] = '1';
+  $newoptions['date_format'] = '';
 
   add_option('wp7feeds_options', $newoptions);
 }
@@ -370,6 +371,7 @@ function wp_7feeds_options() {
     $newoptions['widget_title'] = strip_tags(stripslashes($_POST["widget_title"]));
     $newoptions['widget_promote'] = strip_tags(stripslashes($_POST["widget_promote"]));
     $newoptions['rounded_corners'] = $_POST["rounded_corners"];
+    $newoptions['date_format'] = strip_tags(stripslashes($_POST["date_format"]));
   }
   // any changes? save!
   if ( $options != $newoptions ) {
@@ -500,6 +502,18 @@ function wp_7feeds_options() {
   // Custom widget title
   echo '<tr valign="top"><th scope="row">Custom widget title</th>';
   echo '<td><input type="text" name="widget_title" value="'.$options['widget_title'].'" size="60"></input></td></tr>';
+  
+  // Custom date format
+  if (empty($options['date_format'])) {
+    $options['date_format'] = 'l, d F, Y H:i';
+  }
+  
+  echo '<tr valign="top"><th scope="row">Custom date format</th>';
+  echo '<td><input type="text" name="date_format" value="'.$options['date_format'].'" size="20"></input><br>
+  Example:<br>
+  Y/m/d H:i:s ('.date('Y/m/d H:i:s').')<br>
+  l, d F, Y H:i ('.date('l, d F, Y H:i').')<br>
+  For more information of valid format of the outputted date/time check <a href="http://php.net/manual/en/function.date.php">PHP documentation.</a></td></tr>';
 
   // Open in new window
   echo '<tr valign="top"><th scope="row">Strip tags</th>';

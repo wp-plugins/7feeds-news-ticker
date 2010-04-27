@@ -249,7 +249,8 @@ function xmGetTagValues($array) {
       switch ($ffTag) {
         case 'pubDate':
           $t = strtotime($val);
-          $val = date('d',$t).' '.$gaLang[date('M',$t)].' '.date(' Y H:i',$t);
+          //$val = date('d',$t).' '.$gaLang[date('M',$t)].' '.date(' Y H:i',$t);
+          $val = _7feedsParseDate($t);
           break;
 
         case 'description':
@@ -278,7 +279,8 @@ function xmGetTagValues($array) {
       switch ($key) {
         case 'pubDate':
           $t = time();
-          $aReturn[$key] = date('d',$t).' '.$gaLang[date('M',$t)].' '.date(' Y H:i',$t);
+          //$aReturn[$key] = date('d',$t).' '.$gaLang[date('M',$t)].' '.date(' Y H:i',$t);
+          $aReturn[$key] = _7feedsParseDate($t);
           break;
         default:
           $aReturn[$key] = '';
@@ -289,6 +291,29 @@ function xmGetTagValues($array) {
   return $aReturn;
 }
 /*=========================================*/
+
+function _7feedsParseDate($t) {
+  global $gDateTemplate;
+  
+  return date($gDateTemplate, $t);
+  
+  $dateVal = $gDateTemplate;
+  
+  preg_match_all('/(\w+)/iU',$dateVal, $aTmp);
+  foreach ($aTmp[1] as $key=>$val) {
+    $dateVal = str_replace($val, '~'.$val.'~', $dateVal);
+  }
+  
+  preg_match_all('/~(.+)~/iU',$dateVal, $aTmp);
+  
+  $aData = array();
+  foreach ($aTmp[1] as $key=>$val) {
+    $aData[$val] = date($val,$t);
+    $dateVal = str_replace('~'.$val.'~', date($val,$t), $dateVal);
+  }
+  
+  return $dateVal;
+}
 
 function strip_tags_attributes($sSource, $aAllowedTags = '', $aDisabledAttributes = array()) {
   if (empty($aDisabledAttributes)) return strip_tags($sSource, $aAllowedTags);
