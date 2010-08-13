@@ -213,21 +213,49 @@ function replaceItems($data) {
 function xmGetTagValues($array) {
   global $gaLang;
   $aTags = array('title'=>array('title'),'description'=>array('content','description'),'link'=>array('id','link'),'pubDate'=>array('date','pubDate','pubdate','issued'));
-
+  
   $gaLang = array();
   $gNoReturn = true;
 
   $aReturn = array();
-
+  
   if (!empty($array) && is_array($array)) {
     foreach ($array as $key=>$val) {
       $ffTag = '';
 
+      //Check value & set string from array
+      if (is_array($val)) {
+        $ret = '';
+        $alter = false;
+        
+        foreach ($val as $_k=>$_v) {
+          if (is_array($_v)) {
+            foreach ($_v as $_k1=>$_v1) {
+              if ($_k1 == 'href' && htValidURL($_v1)) {
+                $ret = $_v1;
+              }
+              if ($_k1 == 'rel' && $_v1 == 'alternate') {
+                $alter = true;
+              }
+            }
+          }
+          if ($alter) {
+            break;
+          }
+        }
+         
+        $val = $ret;
+      }
+      
       $skip = true;
       foreach ($aTags as $tag_key=>$tag_val) {
 
         foreach ($tag_val as $tv) {
           if (strpos($key, $tv) === false || strpos($key,'_attr') !== false) {
+            continue;
+          }
+
+          if ($tag_key == 'link' && !htValidURL($val)) {
             continue;
           }
 
@@ -294,24 +322,24 @@ function xmGetTagValues($array) {
 
 function _7feedsParseDate($t) {
   global $gDateTemplate;
-  
+
   return date($gDateTemplate, $t);
-  
+
   $dateVal = $gDateTemplate;
-  
+
   preg_match_all('/(\w+)/iU',$dateVal, $aTmp);
   foreach ($aTmp[1] as $key=>$val) {
     $dateVal = str_replace($val, '~'.$val.'~', $dateVal);
   }
-  
+
   preg_match_all('/~(.+)~/iU',$dateVal, $aTmp);
-  
+
   $aData = array();
   foreach ($aTmp[1] as $key=>$val) {
     $aData[$val] = date($val,$t);
     $dateVal = str_replace('~'.$val.'~', date($val,$t), $dateVal);
   }
-  
+
   return $dateVal;
 }
 
@@ -494,20 +522,20 @@ function _in_array($search, $array, $first_check = true) {
   $re_check = false;
   foreach ($array as $val) {
     if (strpos($search,$val) !== false) {
-      
+
       if (strpos($search,$val) == 0 && $first_check) {
         return true;
       }else {
         $re_check = true;
       }
-      
+
     }
   }
-  
+
   if ($re_check && $first_check) {
     return _in_array($search, $array, false);
   }
-  
+
   return false;
 }
 /*=========================================*/
@@ -944,12 +972,14 @@ function htHTTPRequest($URL, $Content, $RequestMethod=0, $HTTPMethod='POST', $In
   curl_close($ch);
 
   //Get rss url
-  preg_match_all("|<link(.*)alternate.*>|U", $content, $aurls);
-  $rss_url = '';
-  foreach ($aurls[0] as $value) {
-    if (strpos($value,'application/rss+xml') != 0 || strpos($value,'application/rdf+xml') != 0 || strpos($value,'application/atom+xml') != 0) {
-      $rss_url = substr($value, (strpos($value, 'href="')+6));
-      $URL=substr($rss_url, 0, (strpos($rss_url, '"')) - strlen($rss_url));
+  if (strpos($content, '<?xml') === false) {
+    preg_match_all("|<link(.*)alternate.*>|U", $content, $aurls);
+    $rss_url = '';
+    foreach ($aurls[0] as $value) {
+      if (strpos($value,'application/rss+xml') != 0 || strpos($value,'application/rdf+xml') != 0 || strpos($value,'application/atom+xml') != 0) {
+        $rss_url = substr($value, (strpos($value, 'href="')+6));
+        $URL=substr($rss_url, 0, (strpos($rss_url, '"')) - strlen($rss_url));
+      }
     }
   }
 
