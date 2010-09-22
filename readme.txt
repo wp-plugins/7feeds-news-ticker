@@ -4,7 +4,7 @@ Donate link: http://7feeds.com/blog/
 Tags: 7feeds, flash, ticker, wordpress, rss, plugin, widget, free, feed, news, support, contact form, themes, colors, titles, scrolling, settings, sidebar, vertical, website, add rss, plugin blog, color, WP, ioix ukraine
 Requires at least: 2.8
 Tested up to: 2.9.2
-Stable tag: 1.08
+Stable tag: 1.09
 
 == Description ==
 
@@ -34,6 +34,12 @@ An answer to that question.
 2. Default widget options.
 
 == Changelog ==
+
+= Version 1.09 =
+* Widget design: added selecting font type for widget
+* Added news filter: ability to display items with/without specified keywords
+* New design of admin interface - rearranged fields and added tabs
+* Fixed some bugs in the parser
 
 = Version 1.08 =
 * Fix problems with parse links in Atom format

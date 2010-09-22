@@ -25,7 +25,7 @@ include('functions.inc.php');
 //Limit items
 $tLimit = 20;
 
-$url = isset($HTTP_GET_VARS['link'])?$HTTP_GET_VARS['link']:isset($_GET['link'])?$_GET['link']:'';
+$url = $tUrl = isset($HTTP_GET_VARS['link'])?$HTTP_GET_VARS['link']:isset($_GET['link'])?$_GET['link']:'';
 
 if ((int)$url != 0) {
 
@@ -40,15 +40,16 @@ if ((int)$url != 0) {
 
   //Default value
   if (empty($url)) {
+    unset($aTmp);
     $aTmp = get_option('wp7feeds_options');
     $gNewsOrder = $aTmp['news_order'];
     $url = unserialize($aTmp['feed_url']);
   }
-}
 
-$aTmp = get_option('wp7feeds_options');
-if (isset($aTmp['date_format'])) {
-  $gDateTemplate = $aTmp['date_format'];
+  $a_Tmp = get_option('wp7feeds_options');
+  if (isset($a_Tmp['date_format'])) {
+    $gDateTemplate = $a_Tmp['date_format'];
+  }
 }
 
 $aFeedUrls = array();
@@ -145,13 +146,33 @@ foreach ($aFeedUrls as $url) {
     $aFeedChanel = $aChannel;
   }
 
-  if (empty($aFeedItems)) {
-    $aFeedItems = $aFeed;
-  }else {
-    foreach ($aFeed as $fi) {
+  /*if (empty($aFeedItems)) {
+  $aFeedItems = $aFeed;
+  }else {*/
+
+  $aFTmp = (isset($aTmp[$tUrl])?$aTmp[$tUrl]:$a_Tmp);
+
+  $filterI = '';
+  $filterO = '';
+
+  $aFTmp['news_filter'] = trim($aFTmp['news_filter']);
+
+  if (!empty($aFTmp['news_filter'])) {
+    if ($aFTmp['news_filter_type']) {
+      $filterO['words'] = mb_split(',',$aFTmp['news_filter']);
+      $filterO['condition'] = $aFTmp['news_filter_condition'];
+    }else {
+      $filterI['words'] = mb_split(',',$aFTmp['news_filter']);
+      $filterI['condition'] = $aFTmp['news_filter_condition'];
+    }
+  }
+
+  foreach ($aFeed as $fi) {
+    if (findWords($fi['description'], $filterI, $filterO) || findWords($fi['title'], $filterI, $filterO)) {
       $aFeedItems[] = $fi;
     }
   }
+  /*}*/
 }
 
 $tData = array();

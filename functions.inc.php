@@ -213,12 +213,12 @@ function replaceItems($data) {
 function xmGetTagValues($array) {
   global $gaLang;
   $aTags = array('title'=>array('title'),'description'=>array('content','description'),'link'=>array('id','link'),'pubDate'=>array('date','pubDate','pubdate','issued'));
-  
+
   $gaLang = array();
   $gNoReturn = true;
 
   $aReturn = array();
-  
+
   if (!empty($array) && is_array($array)) {
     foreach ($array as $key=>$val) {
       $ffTag = '';
@@ -227,7 +227,7 @@ function xmGetTagValues($array) {
       if (is_array($val)) {
         $ret = '';
         $alter = false;
-        
+
         foreach ($val as $_k=>$_v) {
           if (is_array($_v)) {
             foreach ($_v as $_k1=>$_v1) {
@@ -243,10 +243,10 @@ function xmGetTagValues($array) {
             break;
           }
         }
-         
+
         $val = $ret;
       }
-      
+
       $skip = true;
       foreach ($aTags as $tag_key=>$tag_val) {
 
@@ -255,7 +255,8 @@ function xmGetTagValues($array) {
             continue;
           }
 
-          if ($tag_key == 'link' && !htValidURL($val)) {
+          //if ($tag_key == 'link' && !htValidURL($val)) {
+          if ($tag_key == 'link' && empty($val)) {
             continue;
           }
 
@@ -1466,6 +1467,70 @@ function utf8_replaceEntity($result){
 
 function utf8_html_entity_decode($string){
   return preg_replace_callback('/&#([0-9]+);/u','utf8_replaceEntity',$string);
+}
+/*=========================================*/
+
+/*Find words*/
+function findWords($tDescr, $regularI = '', $regularO = '') {
+
+  if ($regularI!='' && $regularO!='') {
+    return 1;
+  }
+  
+  $tDescr = mb_strtolower($tDescr, 'UTF-8');
+
+  $tReg_1 = $tReg_2 = 1;
+  if ($regularI!='') {
+    $tReg_1 = 0;
+    $tMatch = 0;
+    $tWords = count($regularI['words']);
+
+    //Check words
+    for ($x=0;$x<$tWords;$x++) {
+      $regularI['words'][$x] = trim($regularI['words'][$x]);
+      $regularI['words'][$x] = mb_strtolower($regularI['words'][$x], 'UTF-8');
+      
+      if (!empty($regularI['words'][$x]) && mb_strpos($tDescr, $regularI['words'][$x], 0, 'UTF-8') !== false) {
+        $tMatch++;
+      }
+    }
+
+    //Check condition
+    if (($regularI['condition'] == 1 && $tMatch == $tWords) || ($regularI['condition'] == 0 && $tMatch > 0)) {
+      $tReg_1=1;
+    }
+  }
+
+  /* Second condition */
+
+  if ($regularO!='') {
+    $tReg_2 = 1;
+
+    $tMatch = 0;
+    $tWords = count($regularO['words']);
+
+    //Check words
+    for ($x=0;$x<$tWords;$x++) {
+      $regularO['words'][$x] = trim($regularO['words'][$x]);
+      $regularO['words'][$x] = mb_strtolower($regularO['words'][$x], 'UTF-8');
+      
+      if (!empty($regularO['words'][$x]) && mb_strpos($tDescr, $regularO['words'][$x], 0, 'UTF-8') !== false) {
+        $tMatch++;
+      }
+    }
+
+    //Check condition
+    if (($regularO['condition'] == 1 && $tMatch == $tWords) || ($regularO['condition'] == 0 && $tMatch > 0)) {
+      $tReg_1=0;
+    }
+  }
+  
+  /* Parse array */
+  if ($tReg_1 && $tReg_2) {
+    return 1;
+  }
+  /* Parse array */
+  return 0;
 }
 /*=========================================*/
 ?>
