@@ -209,7 +209,7 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
         $options[$key] = (int)$options[$key];
       }
     }
-    
+
     if (!isset($options[$key]) || $options[$key] === '') {
       $options[$key] = $val;
     }
@@ -221,14 +221,14 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
   }elseif (is_array($aTmp) && !empty($aTmp)) {
     $options['feed_url'] = $aTmp[0];
   }
-  
+
   $font = strtolower($gaFONTS[(int)$options['widget_font']]);
-  
+
   $flashCode = '';
 
   $flashCode .= '<div id="wp-7feeds-flash_'.$num.'"></div>';
 
-  $flashCode .= '<script type="text/javascript" src="'._7FEEDS_PATH.'swf_object.js"></script>';
+  $flashCode .= '<script type="text/javascript" src="'._7FEEDS_PATH.'js/swf_object.js"></script>';
   $flashCode .= '<script type="text/javascript">';
   $flashCode .= 'var so = new SWFObject("'._7FEEDS_MOVIE_PATH.'", "movie", "'.$options['x_size'].'", "'.$options['y_size'].'", "8", "#FFFFFF");';
   $flashCode .= 'so.addParam("wmode", "transparent");';
@@ -298,7 +298,7 @@ function wp_7feeds_get_theme_color($index, $key, $hex=0, $font = 'arial') {
   $aData = array();
   //Default
   $aData[] = array("feed_title_format"=>"left/".$font."/14/0xfe9900/b/ni/nu","body_bgcolor"=>"0xffe0b2","footer_bgcolor"=>"0xffe0b2","feed_highlight"=>"0xffefd8","border_color"=>"0xfe9900","footer_feedo_format"=>"left/".$font."/11/0xfe9900/nb/ni/nu","feed_back_color"=>"0xfffbf2","feeds_num_color"=>"0xfe9900","buttons_onpress_color"=>"0xfe9900");
-  
+
   $aData[] = array("feed_title_format"=>"left/".$font."/14/0xfe9900/b/ni/nu","body_bgcolor"=>"0xffe0b2","footer_bgcolor"=>"0xffe0b2","feed_highlight"=>"0xffefd8","border_color"=>"0xfe9900","footer_feedo_format"=>"left/".$font."/11/0xfe9900/nb/ni/nu","feed_back_color"=>"0xfffbf2","feeds_num_color"=>"0xfe9900","buttons_onpress_color"=>"0xfe9900");
   $aData[] = array("feed_title_format"=>"left/".$font."/14/0x6599ff/b/ni/nu","body_bgcolor"=>"0xd1e0ff","footer_bgcolor"=>"0xd1e0ff","feed_highlight"=>"0xe7f0ff","border_color"=>"0x6599ff","footer_feedo_format"=>"left/".$font."/11/0x6599ff/nb/ni/nu","feed_back_color"=>"0xf7faff","feeds_num_color"=>"0x6599ff","buttons_onpress_color"=>"0x6599ff");
   $aData[] = array("feed_title_format"=>"left/".$font."/14/0xcccb32/b/ni/nu","body_bgcolor"=>"0xf1f0c2","footer_bgcolor"=>"0xf1f0c2","feed_highlight"=>"0xf7f7df","border_color"=>"0xcccb32","footer_feedo_format"=>"left/".$font."/11/0xcccb32/nb/ni/nu","feed_back_color"=>"0xfcfbf6","feeds_num_color"=>"0xcccb32","buttons_onpress_color"=>"0xcccb32");
@@ -401,7 +401,7 @@ function wp_7feeds_options() {
   if (isset($_POST['wp7feeds_submit'])) {
     echo '<div id="message" class="updated fade"><p><strong>7feeds: Settings updated!</strong></p></div>';
   }
-  
+
   echo '<form method="post">';
   echo "<div class=\"wrap\"><h2>Default display options</h2>";
 
@@ -458,76 +458,76 @@ function wp_7feeds_options() {
 		<li><a href="#7feeds_items_settings"><span>News items settings</span></a></li>
 		<li><a href="#7feeds_content"><span>Content</span></a></li>
 	</ul>';
-  
+
   //Widget settings
   echo '<div id="7feeds_widget_settings"><table class="form-table">';
   // Select theme
   echo '<tr valign="top"><th scope="row">Select theme</th>';
   echo '<td>'.wp_7feeds_get_theme_select('theme',$options['theme']).'</td></tr>';
-  
+
   // width
   echo '<tr valign="top"><th scope="row">Width of the widget</th>';
   echo '<td><input type="text" name="x_size" value="'.$options['x_size'].'" size="5"></input> Width in pixels</td></tr>';
-  
+
   // height
   echo '<tr valign="top"><th scope="row">Height of the widget</th>';
   echo '<td><input type="text" name="y_size" value="'.$options['y_size'].'" size="5"></input> Height in pixels</td></tr>';
-  
+
   // Corners
   echo '<tr valign="top"><th scope="row">Rounded corners</th>';
   echo '<td><input type="checkbox" name="rounded_corners" value="1"';
   if( $options['rounded_corners'] == "1" ){ echo ' checked="checked"'; }
   echo '></input></td></tr>';
-  
+
   //Widget font
   echo '<tr valign="top"><th scope="row">Widget font</th>';
   echo '<td>'.wp_7feeds_font_select('widget_font', $newoptions['widget_font']).'</td></tr>';
-  
+
   // Help to promote
   echo '<tr valign="top"><th scope="row">Help to promote 7feeds</th>';
   echo '<td><input type="checkbox" name="widget_promote" value="1"';
   if( $options['widget_promote'] == "1" ){ echo ' checked="checked"'; }
   echo '></input></td></tr>';
-  
+
   echo '</table></div>';
-  
+
   //Items settings
   echo '<div id="7feeds_items_settings"><table class="form-table">';
-  
+
   // News order
   echo '<tr valign="top"><th scope="row">News order</th>';
   echo '<td><select name="news_order"><option value="0">Consistent</option><option value="1" '.($options['news_order']==1?'selected':'').'>Random</option></select></td></tr>';
-  
+
   // Number of entries
   echo '<tr valign="top"><th scope="row">Number of entries</th>';
   echo '<td><input type="text" name="num_of_entries" value="'.$options['num_of_entries'].'" size="3"></input></td></tr>';
-  
+
   // title length
   echo '<tr valign="top"><th scope="row">News title length, chars</th>';
   echo '<td><input type="text" name="title_length" value="'.$options['title_length'].'" size="5"></input></td></tr>';
-  
+
   // text length
   echo '<tr valign="top"><th scope="row">News content length, chars</th>';
   echo '<td><input type="text" name="summary_length" value="'.$options['summary_length'].'" size="5"></input></td></tr>';
-  
+
   // Scroll Speed
   echo '<tr valign="top"><th scope="row">Scrolling speed</th>';
   echo '<td><input type="text" name="scroll_speed" value="'.$options['scroll_speed'].'" size="3"></input></td></tr>';
-  
+
   // Pause time
   echo '<tr valign="top"><th scope="row">Pause time</th>';
   echo '<td><input type="text" name="pause_time" value="'.$options['pause_time'].'" size="6"></input> Set 0 to disable pausing</td></tr>';
-  
+
   //Widget header
   echo '<tr valign="top"><th scope="row">Widget header</th>';
   echo '<td><input type="checkbox" name="widget_header" value="1"';
   if( $options['widget_header'] == "1" ){ echo ' checked="checked"'; }
   echo '></input> Check to show widget header from RSS feed title</td></tr>';
-  
+
   // Custom widget title
   echo '<tr valign="top"><th scope="row">Custom widget title</th>';
   echo '<td><input type="text" name="widget_title" value="'.$options['widget_title'].'" size="60"></input></td></tr>';
-  
+
   //News content
   echo '<tr valign="top"><th scope="row">News content</th>';
   echo '<td><input type="checkbox" name="news_content" value="1"';
@@ -539,7 +539,7 @@ function wp_7feeds_options() {
   echo '<td><input type="checkbox" name="pub_time" value="1"';
   if( $options['pub_time'] == "1" ){ echo ' checked="checked"'; }
   echo '></input> Check to show Pub time of News Item</td></tr>';
-  
+
   // Custom date format
   if (empty($options['date_format'])) {
     $options['date_format'] = 'l, d F, Y H:i';
@@ -551,43 +551,43 @@ function wp_7feeds_options() {
   Y/m/d H:i:s ('.date('Y/m/d H:i:s').')<br>
   l, d F, Y H:i ('.date('l, d F, Y H:i').')<br>
   For more information of valid format of the outputted date/time check <a href="http://php.net/manual/en/function.date.php">PHP documentation.</a></td></tr>';
-  
+
   // Strip tags
   echo '<tr valign="top"><th scope="row">Strip tags</th>';
   echo '<td><input type="checkbox" name="strip_tags" value="1"';
   if( $options['strip_tags'] == "1" ){ echo ' checked="checked"'; }
   echo '></input> Check to strip tags</td></tr>';
-  
+
   // Open in new window
   echo '<tr valign="top"><th scope="row">Open links in new windows</th>';
   echo '<td><input type="checkbox" name="open_new_window" value="1"';
   if( $options['open_new_window'] == "1" ){ echo ' checked="checked"'; }
   echo '></input></td></tr>';
-  
+
   echo '</table></div>';
-  
+
   //Content
   echo '<div id="7feeds_content"><table class="form-table">';
-  
+
   // Feed url
   echo '<tr valign="top"><th scope="row">Feed\'s URL</th>';
   //echo '<td><input type="text" name="feed_url" value="'.$options['feed_url'].'" size="60"></input></td></tr>';
   echo '<td>';
   echo _7feed_multi_fields('feed_url', $options['feed_url'], 'size="60"', 'feed_url_id', false);
   echo '</td></tr>';
-  
+
   // News filter
   echo '<tr valign="top"><th scope="row">Filter type</th>';
   echo '<td><select name="news_filter_type"><option value="0">Contains</option><option value="1" '.($options['news_filter_type']==1?'selected':'').'>Does not contain</option></select></td></tr>';
 
   echo '<tr valign="top"><th scope="row">Filter condition</th>';
   echo '<td><select name="news_filter_condition"><option value="0">OR</option><option '.($options['news_filter_condition']==1?'selected':'').' value="1">AND</option></select></td></tr>';
-  
+
   echo '<tr valign="top"><th scope="row">News filter</th>';
   echo '<td><textarea cols="60" rows="7" name="news_filter">'.addslashes($options['news_filter']).'</textarea><br>For enter several words, separate they with coma</td></tr>';
-  
+
   echo '</table></div>';
-  
+
   // end table
   echo '</table>';
   echo '<input type="hidden" name="wp7feeds_submit" value="true"></input>';
@@ -701,16 +701,16 @@ function _7feed_multi_fields($name, $value, $action, $id, $br=true) {
 
 function wp_7feeds_font_select($name, $sel) {
   global $gaFONTS;
-  
+
   $str = '<select name="'.$name.'">';
-  
+
   $c = count($gaFONTS);
   for ($i=0; $i<$c;$i++) {
     $str .= '<option value="'.$i.'"'.($i==$sel?' selected':'').'>'.$gaFONTS[$i].'</option>';
   }
-  
+
   return $str.'</select>';
-  
+
 }
 
 //uninstall all options
@@ -782,18 +782,18 @@ class WP_Widget_7feeds extends WP_Widget {
     $newoptions['widget_title'] = strip_tags(stripslashes($_POST["wp7feeds_widget_title"]));
     $newoptions['rounded_corners'] = strip_tags(stripslashes($_POST["wp7feeds_rounded_corners"]));
     $newoptions['title'] = strip_tags(stripslashes($_POST["wp7feeds_title"]));
-    
+
     $newoptions['news_filter'] = strip_tags(stripslashes($_POST["wp7feeds_news_filter"]));
     $newoptions['news_filter_type'] = (int)$_POST["wp7feeds_news_filter_type"];
     $newoptions['news_filter_condition'] = (int)$_POST["wp7feeds_news_filter_condition"];
     $newoptions['widget_font'] = (int)$_POST["wp7feeds_widget_font"];
-    
+
     return $newoptions;
   }
 
   // DIsplay Widget Control Form
   function form($options) {
-    
+
     if (empty($options)) {
       $options = get_option('wp7feeds_options');
       foreach ($options as $key=>$val) {
@@ -824,12 +824,12 @@ class WP_Widget_7feeds extends WP_Widget {
     $widget_title = attribute_escape($options['widget_title']);
     $rounded_corners = attribute_escape($options['rounded_corners']);
     $title = attribute_escape($options['title']);
-    
+
     $news_filter = $options['news_filter'];
     $news_filter_type = $options['news_filter_type'];
     $news_filter_condition = $options['news_filter_condition'];
     $widget_font = $options['widget_font'];
-    
+
     echo _7feed_get_javaScript();
 		?>
 			<p><label for="wp7feeds_title"><?php _e('Title (optional):'); ?> <input class="widefat" id="wp7feeds_title" name="wp7feeds_title" type="text" value="<?php echo $title; ?>" /></label></p>
@@ -878,9 +878,28 @@ class WP_Widget_7feeds extends WP_Widget {
 add_action('widgets_init', 'widget_7feeds_init');
 function widget_7feeds_init() {
 
+  if(is_admin()) {
+    global $path;
+    
+    wp_enqueue_script('jquery');
+    wp_enqueue_script('jquery-ui-core');
+    wp_enqueue_script('jquery-ui-tabs');
+    
+    wp_enqueue_script('7feeds_ticker',$path.'js/7feeds.js', array('jquery'));
+    wp_enqueue_script('jquery-cookie',$path.'js/jquery.cookie.js', array('jquery'));
+
+    add_action('admin_head', 'wp_7feeds_admin_head');
+  }
+
   if ($GLOBALS['7FEEDS_ACTIVE'] === true) {
     register_widget('WP_Widget_7feeds');
   }
+}
+
+function wp_7feeds_admin_head() {
+  global $path;
+  
+  echo "<link rel='stylesheet' href='".$path."wp_admin.css?v=2.0.9' type='text/css'type='text/css' media='all' />";
 }
 /*** CLASS ***/
 
