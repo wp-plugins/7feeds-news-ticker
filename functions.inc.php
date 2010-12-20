@@ -259,6 +259,10 @@ function xmGetTagValues($array) {
           if ($tag_key == 'link' && empty($val)) {
             continue;
           }
+          
+          if ($tag_key == 'description' && empty($val)) {
+            continue;
+          }
 
           $skip = false;
           $ffTag = $tag_key;
