@@ -26,7 +26,7 @@ function basexml2array($contents, $get_attributes=1, $priority = 'tag') {
   //xml_parser_set_option($parser, XML_OPTION_TARGET_ENCODING, "UTF-8"); # http://minutillo.com/steve/weblog/2004/6/17/php-xml-and-character-encodings-a-tale-of-sadness-rage-and-data-loss
   xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, false);
   xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, true);
-  xml_parse_into_struct($parser, trim($contents), $xml_values);
+  xml_parse_into_struct($parser, trim($contents), $xml_values, $arr_index);
   xml_parser_free($parser);
 
   if(!$xml_values) return;//Hmm...

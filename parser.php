@@ -91,10 +91,6 @@ foreach ($aFeedUrls as $url) {
     $return = $Cont['Content'];
     $headers = htGetResponseHeaders($Cont['Header']);
 
-    /*echo '<xmp>';
-    echo print_r($Cont);
-    echo '</xmp>';*/
-
     if (isset($headers['Location']) && !empty($headers['Location'])) {
       $url = trim($headers['Location']);
       //echo 'Location: '.$url.'<BR>';
@@ -136,16 +132,26 @@ foreach ($aFeedUrls as $url) {
     }
   }
 
+  /*12109*/
   //Convert htmlspecialchars
-  $return = utf8_html_entity_decode($return);
+  //$return = utf8_html_entity_decode($return);
+  /*12109*/
 
   $return=preg_replace("/<img[^>]*>/i", '', $return);
+  
   list($aChannel, $aFeed) = xmParseFeedArray(basexml2array($return));
 
   if (empty($aFeedChanel)) {
     $aFeedChanel = $aChannel;
   }
 
+  /*12109*/
+  foreach ($aFeed as $key=>$val) {
+    $aFeed[$key]['title'] = utf8_html_entity_decode($val['title']);
+    $aFeed[$key]['description'] = utf8_html_entity_decode($val['description']);
+  }
+  /*12109*/
+  
   /*if (empty($aFeedItems)) {
   $aFeedItems = $aFeed;
   }else {*/
@@ -187,9 +193,9 @@ $c = count($tArrayKeys);
 
 for ($i=0; $i < $c; $i++) {
   $value = $aFeedItems[$tArrayKeys[$i]];
-  if ($cnt > $tLimit) {
+  /*if ($cnt > $tLimit) {
     break;
-  }
+  }*/
 
   if (!isset($value['description'])) {
     $value['description'] = '';
