@@ -3,7 +3,7 @@
 Plugin Name: 7feeds ticker
 Plugin URI: http://7feeds.com
 Description: Flash based RSS ticker widget for WordPress. <a href="http://7feeds.com">Visit widget page</a> for more information.
-Version: 1.10.1
+Version: 1.10.2
 Author: IOIX Ukraine
 Author URI: http://ioix.com.ua
 
@@ -117,7 +117,9 @@ function wp_7feeds_install () {
 
 // add the admin page
 function wp_7feeds_add_pages() {
-  add_options_page('7feeds ticker', '7feeds ticker', 8, __FILE__, 'wp_7feeds_options');
+  $page=add_options_page('7feeds ticker', '7feeds ticker', 8, __FILE__, 'wp_7feeds_options');
+  add_action('admin_head', 'wp_7feeds_admin_head');
+  add_action('admin_print_scripts-' . $page, 'wp_7feeds_admin_scripts');
 }
 
 // replace tag in content with tag cloud (non-shortcode version for WP 2.3.x)
@@ -879,16 +881,13 @@ add_action('widgets_init', 'widget_7feeds_init');
 function widget_7feeds_init() {
 
   if(is_admin()) {
-    global $path;
-    
     wp_enqueue_script('jquery');
     wp_enqueue_script('jquery-ui-core');
     wp_enqueue_script('jquery-ui-tabs');
     
-    wp_enqueue_script('7feeds_ticker',$path.'js/7feeds.js', array('jquery'));
-    wp_enqueue_script('jquery-cookie',$path.'js/jquery.cookie.js', array('jquery'));
+    wp_enqueue_script('jquery-cookie',_7FEEDS_PATH.'js/jquery.cookie.js', array('jquery'));    
+    wp_register_script('7feeds_ticker',_7FEEDS_PATH.'js/7feeds.js');
 
-    add_action('admin_head', 'wp_7feeds_admin_head');
   }
 
   if ($GLOBALS['7FEEDS_ACTIVE'] === true) {
@@ -897,9 +896,11 @@ function widget_7feeds_init() {
 }
 
 function wp_7feeds_admin_head() {
-  global $path;
-  
-  echo "<link rel='stylesheet' href='".$path."wp_admin.css?v=2.0.9' type='text/css'type='text/css' media='all' />";
+  echo "<link rel='stylesheet' href='"._7FEEDS_PATH."wp_admin.css' type='text/css'type='text/css' media='all' />";
+}
+
+function wp_7feeds_admin_scripts() {
+  wp_enqueue_script('7feeds');
 }
 /*** CLASS ***/
 
