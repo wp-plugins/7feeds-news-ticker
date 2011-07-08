@@ -900,7 +900,7 @@ function wp_7feeds_admin_head() {
 }
 
 function wp_7feeds_admin_scripts() {
-  wp_enqueue_script('7feeds');
+  wp_enqueue_script('7feeds_ticker');
 }
 /*** CLASS ***/
 
