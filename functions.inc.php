@@ -299,7 +299,7 @@ function xmGetTagValues($array) {
             }
           }
           //$val = strip_tags_attributes($val,'<a>,<b>,<br>,<font>,<i>,<li>,<p>,<span>,<textformat>,<u>',array('height','alt','width','clear','size','class','border','style'));
-          $val = strip_tags_attributes($val,'<a>,<b>,<font>,<i>,<li>,<p>,<span>,<textformat>,<u>',array('height','alt','width','clear','size','class','border','style'));
+          $val = strip_tags_attributes($val,'<a>,<b>,<font>,<i>,<ul>,<ol>,<li>,<p>,<span>,<textformat>,<u>,<br>,<strong>',array('height','alt','width','clear','size','class','border','style'));
           break;
       }
 
@@ -1003,16 +1003,17 @@ function htHTTPRequest($URL, $Content, $RequestMethod=0, $HTTPMethod='POST', $In
       $buff_out=$Content;
       $ch=curl_init();
       curl_setopt($ch, CURLOPT_URL, $URL);
+      curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; rv:1.7.3) Gecko/20041001 Firefox/0.10.1" );
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
       curl_setopt($ch, CURLOPT_TIMEOUT, $gAccessTimeOut);
       curl_setopt($ch, CURLOPT_WRITEFUNCTION, 'htReadBody');
       curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'htReadHeader');
       curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
-      /** Some servers do not allow HEAD requests
-*        if(!$IncludeBody){
-*          curl_setopt($ch, CURLOPT_NOBODY, 1);
-*        }
-*/
+      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 1);# required for https urls
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);   # required for https urls 
+      curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, $gAccessTimeOut );
+      curl_setopt( $ch, CURLOPT_MAXREDIRS, 10 );
+      
       if(!empty($Cookie)){
         curl_setopt($ch, CURLOPT_COOKIE, $Cookie);
       }

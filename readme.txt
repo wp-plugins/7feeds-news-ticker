@@ -35,6 +35,10 @@ An answer to that question.
 
 == Changelog ==
 
+= Version 1.10.3 =
+* Add reader(curl) for xml from ssl(https) servers
+* Fixed strip tag functionality for <br> tag
+
 = Version 1.10.2 =
 * Fixed conflict with js-scripts.
 
