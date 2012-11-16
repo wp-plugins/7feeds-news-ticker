@@ -803,7 +803,7 @@ function htGetPageContent($URL, $Content, $HttpMethod, $GetBody, $ConvCharset=1,
   if(!empty($GetBody) && !empty($ConvCharset)){
     //Get charset type from body
     $array1=array();
-    $text=eregi_replace(">", " >", $PC['Content']);
+    $text=preg_replace("/\>/", " >", $PC['Content']);
     if(!preg_match('/(<meta.*charset.*>)/smi', $text, $array1)){
       if(!preg_match('/(<?xml .*encoding.*?>)/smi', $text, $array1)){
         $PC['Charset']='';
@@ -824,7 +824,7 @@ function htGetPageContent($URL, $Content, $HttpMethod, $GetBody, $ConvCharset=1,
     //If charset not found in the body try to get it from the head
     if($PC['Charset']==''){
       //Get charset and content type from header
-      $text=eregi_replace(">", " >", $PC['Header']);
+      $text=preg_replace("/\>/", " >", $PC['Header']);
       $array1=array();
       if(!preg_match('/(Content-Type:.*charset.*\r?\n)/smi', $text, $array1)){
         $PC['Charset']='';

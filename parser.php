@@ -27,7 +27,9 @@ $tLimit = 20;
 
 $url = $tUrl = isset($HTTP_GET_VARS['link'])?$HTTP_GET_VARS['link']:isset($_GET['link'])?$_GET['link']:'';
 
-if ((int)$url != 0) {
+
+
+if (trim($url) != '') {
 
   //Include wp config
   require("../../../wp-config.php");
@@ -51,6 +53,10 @@ if ((int)$url != 0) {
     $gDateTemplate = $a_Tmp['date_format'];
   }
 }
+
+$a_Tmp["news_filter"]=isset($HTTP_GET_VARS['nf'])?$HTTP_GET_VARS['nf']:isset($_GET['nf'])?$_GET['nf']:$a_Tmp["news_filter"];
+$a_Tmp["news_filter_type"]=isset($HTTP_GET_VARS['nft'])?$HTTP_GET_VARS['nft']:isset($_GET['nft'])?$_GET['nft']:$a_Tmp["news_filter_type"];
+$a_Tmp["news_filter_condition"]=isset($HTTP_GET_VARS['nfc'])?$HTTP_GET_VARS['nfc']:isset($_GET['nfc'])?$_GET['nfc']:$a_Tmp["news_filter_condition"];
 
 $aFeedUrls = array();
 if (!is_array($url)) {

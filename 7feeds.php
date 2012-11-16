@@ -3,7 +3,7 @@
 Plugin Name: 7feeds ticker
 Plugin URI: http://7feeds.com
 Description: Flash based RSS ticker widget for WordPress. <a href="http://7feeds.com">Visit widget page</a> for more information.
-Version: 1.10.3
+Version: 1.10.4
 Author: IOIX Ukraine
 Author URI: http://ioix.com.ua
 
@@ -140,7 +140,7 @@ function wp_7feeds_insert( $atts=NULL ){
 
 // shortcode function
 function wp_7feeds_shortcode( $atts=NULL ){
-  return wp_7feeds_createflashcode( false, $atts );
+ return wp_7feeds_createflashcode( false, $atts );
 }
 
 // piece together the flash code
@@ -184,6 +184,7 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
   }else {
     $options['feed_url'] = serialize(array($options['feed_url']));
   }
+
 
   //Check box fields
   $aF = array('open_new_window','strip_tags','widget_header','news_content','pub_time','pause_time','rounded_corners');
@@ -270,6 +271,15 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
   $flashCode .= 'so.addVariable("show_url_field","0");';
   $flashCode .= 'so.addVariable("data_url","'._7FEEDS_PATH.'parser.php");';
   $flashCode .= 'so.addVariable("feed_url","'.$options['feed_url'].'");';
+  if (!is_array($atts['news_filter']) && unserialize($atts['news_filter']) !== false) {
+    $flashCode .= 'so.addVariable("news_filter","'.unserialize($atts['news_filter']).'");';
+  }  
+  if (isset($atts['news_filter_type'])) {
+    $flashCode .= 'so.addVariable("news_filter_type","'.$atts['news_filter_type'].'");';
+  }  
+  if (isset($atts['news_filter_condition'])) {
+    $flashCode .= 'so.addVariable("news_filter_condition","'.$atts['news_filter_condition'].'");';
+  }  
   $flashCode .= 'so.addVariable("strip_tags","'.$options['strip_tags'].'");';
   $flashCode .= 'so.addVariable("elements_strcolor","0x777777");';
   $flashCode .= 'so.addVariable("elements_bgcols","0xFFF7E1");';
@@ -447,10 +457,13 @@ function wp_7feeds_options() {
   [pub_time = "1"]<br>
   [widget_title = 1]<br>
   [widget_promote = "1"]<br>
-  [rounded_corners = "1"]<br><br>
+  [rounded_corners = "1"]<br>
+  [news_filter = "news,relax"]<br>
+  [news_filter_type = "1"]<br>
+  [news_filter_condition = "0"]<br>
   
   <b>Example:</b><br>
-  [wp-7feeds feed_url = "http://news.bbc.co.uk/" pub_time = "1" rounded_corners = "1" theme = "2"]<br><br>
+  [wp-7feeds feed_url = "http://news.bbc.co.uk/" pub_time = "1" rounded_corners = "1" theme = "2"  news_filter = "news" news_filter_type = "1" news_filter_condition = "0"]<br><br>
   </div>
   <?php
 
