@@ -271,8 +271,8 @@ function wp_7feeds_createflashcode( $widget=false, $atts=NULL, $widget_options =
   $flashCode .= 'so.addVariable("show_url_field","0");';
   $flashCode .= 'so.addVariable("data_url","'._7FEEDS_PATH.'parser.php");';
   $flashCode .= 'so.addVariable("feed_url","'.$options['feed_url'].'");';
-  if (!is_array($atts['news_filter']) && unserialize($atts['news_filter']) !== false) {
-    $flashCode .= 'so.addVariable("news_filter","'.unserialize($atts['news_filter']).'");';
+  if (isset($atts['news_filter'])) {
+    $flashCode .= 'so.addVariable("news_filter","'.$atts['news_filter'].'");';
   }  
   if (isset($atts['news_filter_type'])) {
     $flashCode .= 'so.addVariable("news_filter_type","'.$atts['news_filter_type'].'");';

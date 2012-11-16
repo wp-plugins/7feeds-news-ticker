@@ -54,7 +54,7 @@ if (trim($url) != '') {
   }
 }
 
-$a_Tmp["news_filter"]=isset($HTTP_GET_VARS['nf'])?$HTTP_GET_VARS['nf']:isset($_GET['nf'])?$_GET['nf']:$a_Tmp["news_filter"];
+$a_Tmp["news_filter"]=utf8_encode(isset($HTTP_GET_VARS['nf'])?$HTTP_GET_VARS['nf']:isset($_GET['nf'])?$_GET['nf']:$a_Tmp["news_filter"]);
 $a_Tmp["news_filter_type"]=isset($HTTP_GET_VARS['nft'])?$HTTP_GET_VARS['nft']:isset($_GET['nft'])?$_GET['nft']:$a_Tmp["news_filter_type"];
 $a_Tmp["news_filter_condition"]=isset($HTTP_GET_VARS['nfc'])?$HTTP_GET_VARS['nfc']:isset($_GET['nfc'])?$_GET['nfc']:$a_Tmp["news_filter_condition"];
 
@@ -179,12 +179,19 @@ foreach ($aFeedUrls as $url) {
     }
   }
 
+
   foreach ($aFeed as $fi) {
     if (findWords($fi['description'], $filterI, $filterO) || findWords($fi['title'], $filterI, $filterO)) {
       $aFeedItems[] = $fi;
     }
   }
   /*}*/
+}
+
+function correct_encoding($text) {
+    $current_encoding = mb_detect_encoding($text, 'auto');
+    $text = iconv($current_encoding, 'UTF-8', $text);
+    return $text;
 }
 
 $tData = array();
