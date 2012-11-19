@@ -54,7 +54,7 @@ if (trim($url) != '') {
   }
 }
 
-$a_Tmp["news_filter"]=utf8_encode(isset($HTTP_GET_VARS['nf'])?$HTTP_GET_VARS['nf']:isset($_GET['nf'])?$_GET['nf']:$a_Tmp["news_filter"]);
+$a_Tmp["news_filter"]=isset($HTTP_GET_VARS['nf'])?$HTTP_GET_VARS['nf']:isset($_GET['nf'])?$_GET['nf']:$a_Tmp["news_filter"];
 $a_Tmp["news_filter_type"]=isset($HTTP_GET_VARS['nft'])?$HTTP_GET_VARS['nft']:isset($_GET['nft'])?$_GET['nft']:$a_Tmp["news_filter_type"];
 $a_Tmp["news_filter_condition"]=isset($HTTP_GET_VARS['nfc'])?$HTTP_GET_VARS['nfc']:isset($_GET['nfc'])?$_GET['nfc']:$a_Tmp["news_filter_condition"];
 
@@ -79,7 +79,7 @@ if (empty($aFeedUrls)) {
 $enc = 'UTF-8';
 $gTimeout = 10;
 $gHCRLF = "\n";
-
+ 
 $aFeedChanel = array();
 $aFeedItems = array();
 
@@ -167,10 +167,10 @@ foreach ($aFeedUrls as $url) {
   $filterI = '';
   $filterO = '';
 
-  $aFTmp['news_filter'] = trim($aFTmp['news_filter']);
+  //$aFTmp['news_filter']=correct_encoding(trim($aFTmp['news_filter']));
 
   if (!empty($aFTmp['news_filter'])) {
-    if ($aFTmp['news_filter_type']) {
+    if ((int)$aFTmp['news_filter_type']) {
       $filterO['words'] = mb_split(',',$aFTmp['news_filter']);
       $filterO['condition'] = $aFTmp['news_filter_condition'];
     }else {
@@ -178,21 +178,16 @@ foreach ($aFeedUrls as $url) {
       $filterI['condition'] = $aFTmp['news_filter_condition'];
     }
   }
-
-
-  foreach ($aFeed as $fi) {
-    if (findWords($fi['description'], $filterI, $filterO) || findWords($fi['title'], $filterI, $filterO)) {
+  
+  foreach ($aFeed as $fi) { 
+    if (findWords($fi['description'].$fi['title'], $filterI, $filterO)) {
       $aFeedItems[] = $fi;
     }
   }
   /*}*/
 }
 
-function correct_encoding($text) {
-    $current_encoding = mb_detect_encoding($text, 'auto');
-    $text = iconv($current_encoding, 'UTF-8', $text);
-    return $text;
-}
+
 
 $tData = array();
 $cnt = 0;

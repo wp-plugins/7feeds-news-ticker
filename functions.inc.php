@@ -1481,61 +1481,78 @@ function findWords($tDescr, $regularI = '', $regularO = '') {
   if ($regularI!='' && $regularO!='') {
     return 1;
   }
-  
-  $tDescr = mb_strtolower($tDescr, 'UTF-8');
 
-  $tReg_1 = $tReg_2 = 1;
+  $tDescr = mb_strtolower($tDescr, 'UTF-8');
+  
+
+ // $tReg_1 = $tReg_2 = 1;
   if ($regularI!='') {
     $tReg_1 = 0;
     $tMatch = 0;
-    $tWords = count($regularI['words']);
-
+    $tWords = array_count_values($regularI['words']);
+    $regularI['words']=split(',',$regularI['words'][0]);
     //Check words
-    for ($x=0;$x<$tWords;$x++) {
-      $regularI['words'][$x] = trim($regularI['words'][$x]);
-      $regularI['words'][$x] = mb_strtolower($regularI['words'][$x], 'UTF-8');
-      
-      if (!empty($regularI['words'][$x]) && mb_strpos($tDescr, $regularI['words'][$x], 0, 'UTF-8') !== false) {
+    foreach ($regularI['words'] as $word) {    
+      $search_word = mb_strtolower(trim(correct_encoding($word)), 'UTF-8');    
+      if (!empty($search_word) && mb_strpos(mb_strtolower($tDescr), $search_word) !== false) {
         $tMatch++;
       }
-    }
-
-    //Check condition
+      $tWords++;
+    }    
+    
+   //Check condition not
     if (($regularI['condition'] == 1 && $tMatch == $tWords) || ($regularI['condition'] == 0 && $tMatch > 0)) {
       $tReg_1=1;
     }
   }
-
-  /* Second condition */
+  
+ /* Second condition */
 
   if ($regularO!='') {
-    $tReg_2 = 1;
-
     $tMatch = 0;
-    $tWords = count($regularO['words']);
-
+    $tReg_2 = 1;
+    $tWords = 0;
+    $regularO['words']=split(',',$regularO['words'][0]);
+   
     //Check words
-    for ($x=0;$x<$tWords;$x++) {
-      $regularO['words'][$x] = trim($regularO['words'][$x]);
-      $regularO['words'][$x] = mb_strtolower($regularO['words'][$x], 'UTF-8');
-      
-      if (!empty($regularO['words'][$x]) && mb_strpos($tDescr, $regularO['words'][$x], 0, 'UTF-8') !== false) {
+    foreach ($regularO['words'] as $word) {    
+      $search_word = mb_strtolower(trim(correct_encoding($word)), 'UTF-8');   
+    //  var_dump($search_word,$tDescr); 
+      if (!empty($search_word) && mb_strpos(mb_strtolower($tDescr), $search_word) !== false) {
         $tMatch++;
       }
+      $tWords++;
     }
 
     //Check condition
     if (($regularO['condition'] == 1 && $tMatch == $tWords) || ($regularO['condition'] == 0 && $tMatch > 0)) {
-      $tReg_1=0;
+      $tReg_2=0;
     }
   }
   
   /* Parse array */
-  if ($tReg_1 && $tReg_2) {
+  if ($tReg_1 || $tReg_2) {
     return 1;
   }
   /* Parse array */
   return 0;
 }
 /*=========================================*/
+
+function detect_encoding($string) { 
+  static $list = array('utf-8', 'windows-1251','ASCII');
+ 
+  foreach ($list as $item) {
+    $sample = iconv($item, $item, $string);
+    if (md5($sample) == md5($string))
+      return $item;
+  }
+  return null;
+}
+
+function correct_encoding($text) {
+    $current_encoding = detect_encoding($text);
+    $text = iconv($current_encoding, 'UTF-8', $text);
+    return $text;
+}
 ?>
