@@ -15,7 +15,7 @@ $gCurUTC=3600*2;                                //Current User's UTC
 $gUTC=0;                                        //Server's UTC (estimated in secondes)
 
 /** @global integer $gNewsOrder */
-$gNewsOrder=1;                                  //1 - random, 0 - Consistent
+$gNewsOrder=0;                                  //1 - random, 0 - Consistent, 2 - Order by Public Date ascending, 3 - Order by Public Date descending
 
 $gDateTemplate = 'l, d F, Y H:i';
 
@@ -27,21 +27,28 @@ $tLimit = 20;
 
 $url = $tUrl = isset($HTTP_GET_VARS['link'])?$HTTP_GET_VARS['link']:isset($_GET['link'])?$_GET['link']:'';
 
-
-
-if (trim($url) != '') {
-
-  //Include wp config
-  require("../../../wp-config.php");
+//Include wp config
+require("../../../wp-config.php");
+if ((isset($url))&&(trim($url) != '')) {
   $aTmp = get_option('widget_7feeds-widget');
-
-  if (isset($aTmp[$url])) {
-    $gNewsOrder = $aTmp[$url]['news_order'];
-    $url = unserialize($aTmp[$url]['feed_url']);
+  
+  if (isset($aTmp[$tUrl])) {
+    $gNewsOrder = $aTmp[$tUrl]['news_order'];
+    $url = unserialize($aTmp[$tUrl]['feed_url']);
   }
-
+  
+ 
+  if (isset($aTmp[$tUrl])) {
+    $gNewsOrder = $aTmp[$tUrl]['news_order'];
+    $url = unserialize($aTmp[$tUrl]['feed_url']);
+  }  
+  
+  if (isset($aTmp['news_order'])&&($gNewsOrder==0)){
+    $gNewsOrder = $aTmp['news_order'];
+  }
+ 
   //Default value
-  if (empty($url)) {
+  if (empty($tUrl)) {
     unset($aTmp);
     $aTmp = get_option('wp7feeds_options');
     $gNewsOrder = $aTmp['news_order'];
@@ -51,7 +58,11 @@ if (trim($url) != '') {
   $a_Tmp = get_option('wp7feeds_options');
   if (isset($a_Tmp['date_format'])) {
     $gDateTemplate = $a_Tmp['date_format'];
-  }
+  } 
+}else{
+  $aTmp = get_option('wp7feeds_options');
+  $gNewsOrder = $aTmp['news_order'];
+  $url = unserialize($aTmp['feed_url']);
 }
 
 $a_Tmp["news_filter"]=isset($HTTP_GET_VARS['nf'])?$HTTP_GET_VARS['nf']:isset($_GET['nf'])?$_GET['nf']:$a_Tmp["news_filter"];
@@ -161,15 +172,14 @@ foreach ($aFeedUrls as $url) {
   /*if (empty($aFeedItems)) {
   $aFeedItems = $aFeed;
   }else {*/
-
   $aFTmp = (isset($aTmp[$tUrl])?$aTmp[$tUrl]:$a_Tmp);
 
   $filterI = '';
   $filterO = '';
 
   //$aFTmp['news_filter']=correct_encoding(trim($aFTmp['news_filter']));
-
-  if (!empty($aFTmp['news_filter'])) {
+ 
+  if (!empty($aFTmp['news_filter'])&&($aFTmp['news_filter']!='')) {
     if ((int)$aFTmp['news_filter_type']) {
       $filterO['words'] = mb_split(',',$aFTmp['news_filter']);
       $filterO['condition'] = $aFTmp['news_filter_condition'];
@@ -177,16 +187,49 @@ foreach ($aFeedUrls as $url) {
       $filterI['words'] = mb_split(',',$aFTmp['news_filter']);
       $filterI['condition'] = $aFTmp['news_filter_condition'];
     }
-  }
   
-  foreach ($aFeed as $fi) { 
-    if (findWords($fi['description'].$fi['title'], $filterI, $filterO)) {
-      $aFeedItems[] = $fi;
+
+    foreach ($aFeed as $fi) { 
+      if (findWords($fi['description'].$fi['title'], $filterI, $filterO)) {
+        $aFeedItems[] = $fi;
+      }
     }
+    
   }
-  /*}*/
+  $aFeedItems=$aFeed;
+  /*}*/ 
 }
 
+if (($gNewsOrder==2)&&(!empty($aFeedItems))){
+  $aFeedItems=sort_arr($aFeedItems, 'pubDate1', 'desc');
+}
+if (($gNewsOrder==3)&&(!empty($aFeedItems))){
+  $aFeedItems=sort_arr($aFeedItems, 'pubDate1', 'asc');
+}  
+  
+
+function sort_arr($array, $sortby, $direction='asc') {
+    
+    $sortedArr = array();
+    $tmp_Array = array();
+    
+    foreach($array as $k => $v) {
+        $tmp_Array[] = strtolower($v[$sortby]);
+    }
+    
+    if($direction=='asc'){
+        asort($tmp_Array);
+    }else{
+        arsort($tmp_Array);
+    }
+    
+    foreach($tmp_Array as $k=>$tmp){
+        $sortedArr[] = $array[$k];
+    }
+    
+    return $sortedArr;
+ 
+}
 
 
 $tData = array();

@@ -282,9 +282,12 @@ function xmGetTagValues($array) {
       switch ($ffTag) {
         case 'pubDate':
           $t = strtotime($val);
+          $aReturn['pubDate1'] = $t;
           //$val = date('d',$t).' '.$gaLang[date('M',$t)].' '.date(' Y H:i',$t);
           $val = _7feedsParseDate($t);
+          
           break;
+                  
 
         case 'description':
           $i=0;
@@ -467,9 +470,9 @@ function xmParseFeedArray($aFeed) {
   $aParentTag = array('rss'=>array('rss','rdf'));
   $aFeedTags = array('channel'=>array('channel','feed'));
   $aItemParentTags = array('item'=>array('item','entry'));
-  $aItemTags = array('title'=>array('title'),'description'=>array('content','description'),'link'=>array('id','link'),'pubDate'=>array('date','pubDate','pubdate','issued','modified'));
+  $aItemTags = array('title'=>array('title'),'description'=>array('content','description'),'link'=>array('id','link'),'pubDate'=>array('date','pubDate','pubdate','issued','modified'),'pubDate1'=>array('date','pubDate','pubdate','issued','modified'));
 
-  $aChannel = array('title'=>'','description'=>'','link'=>'','pubDate'=>'');
+  $aChannel = array('title'=>'','description'=>'','link'=>'','pubDate'=>'','pubDate1'=>'');
   $aItems = array();
 
   if (empty($aFeed)) {

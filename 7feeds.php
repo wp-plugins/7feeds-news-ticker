@@ -3,7 +3,7 @@
 Plugin Name: 7feeds ticker
 Plugin URI: http://7feeds.com
 Description: Flash based RSS ticker widget for WordPress. <a href="http://7feeds.com">Visit widget page</a> for more information.
-Version: 1.10.4
+Version: 1.10.5
 Author: IOIX Ukraine
 Author URI: http://ioix.com.ua
 
@@ -386,7 +386,7 @@ function wp_7feeds_options() {
       $newoptions['feed_url'] = strip_tags(stripslashes($_POST["feed_url"]));
     }
 
-    $newoptions['news_order'] = strip_tags(stripslashes($_POST["news_order"]));
+    $newoptions['news_order'] = (int)$_POST["news_order"];
     $newoptions['strip_tags'] = strip_tags(stripslashes($_POST["strip_tags"]));
     $newoptions['theme'] = strip_tags(stripslashes($_POST["theme"]));
     $newoptions['widget_header'] = strip_tags(stripslashes($_POST["widget_header"]));
@@ -396,7 +396,7 @@ function wp_7feeds_options() {
     $newoptions['widget_promote'] = strip_tags(stripslashes($_POST["widget_promote"]));
     $newoptions['rounded_corners'] = $_POST["rounded_corners"];
     $newoptions['date_format'] = strip_tags(stripslashes($_POST["date_format"]));
-
+    
     $newoptions['news_filter'] = strip_tags(stripslashes($_POST["news_filter"]));
     $newoptions['news_filter_type'] = (int)$_POST["news_filter_type"];
     $newoptions['news_filter_condition'] = (int)$_POST["news_filter_condition"];
@@ -511,7 +511,7 @@ function wp_7feeds_options() {
 
   // News order
   echo '<tr valign="top"><th scope="row">News order</th>';
-  echo '<td><select name="news_order"><option value="0">Consistent</option><option value="1" '.($options['news_order']==1?'selected':'').'>Random</option></select></td></tr>';
+  echo '<td><select name="news_order"><option value="0">Consistent</option><option value="1" '.($options['news_order']==1?'selected':'').'>Random</option><option value="2" '.($options['news_order']==2?'selected':'').'>Order by date asc</option><option value="3" '.($options['news_order']==3?'selected':'').'>Order by date desc</option></select></td></tr>';
 
   // Number of entries
   echo '<tr valign="top"><th scope="row">Number of entries</th>';
@@ -787,7 +787,7 @@ class WP_Widget_7feeds extends WP_Widget {
       $newoptions['feed_url'] = strip_tags(stripslashes($_POST["wp7feeds_widget_feed_url"]));
     }
 
-    $newoptions['news_order'] = strip_tags(stripslashes($_POST["wp7feeds_widget_news_order"]));
+    $newoptions['news_order'] = (int)$_POST["wp7feeds_widget_news_order"];
 
     $newoptions['strip_tags'] = strip_tags(stripslashes($_POST["wp7feeds_widget_strip_tags"]));
     $newoptions['theme'] = strip_tags(stripslashes($_POST["wp7feeds_theme"]));
@@ -862,6 +862,8 @@ class WP_Widget_7feeds extends WP_Widget {
 			 <select name="wp7feeds_widget_news_order">
 			   <option value="0">Consistent</option>
 			   <option value="1" <? if( $news_order == 1 ){ echo 'selected'; } ?>>Random</option>
+         <option value="2" <? if( $news_order == 2 ){ echo 'selected'; } ?> >Order by date asc</option>
+         <option value="3" <? if( $news_order == 3 ){ echo 'selected'; } ?> >Order by date desc</option>			   
 			 </select>
 			</p>
 			
@@ -871,8 +873,8 @@ class WP_Widget_7feeds extends WP_Widget {
 			
 			<p><label for="wp7feeds_widget_header"><input class="checkbox" id="wp7feeds_widget_header" name="wp7feeds_widget_header" type="checkbox" value="1" <?php if( $widget_header == "1" ){ echo ' checked="checked"'; } ?> > Widget header</label></p>
 			<p><label for="wp7feeds_news_content"><input class="checkbox" id="wp7feeds_news_content" name="wp7feeds_news_content" type="checkbox" value="1" <?php if( $news_content == "1" ){ echo ' checked="checked"'; } ?> > News content</label></p>
-			<p><label for="wp7feeds_pub_time"><input class="checkbox" id="wp7feeds_pub_time" name="wp7feeds_pub_time" type="checkbox" value="1" <?php if( $pub_time == "1" ){ echo ' checked="checked"'; } ?> > Pub time</label></p>
-
+			<p><label for="wp7feeds_pub_time"><input class="checkbox" id="wp7feeds_pub_time" name="wp7feeds_pub_time" type="checkbox" value="1" <?php if( $pub_time == "1" ){ echo ' checked="checked"'; } ?> > Pub time</label></p>    
+      			
 			<p><label for="wp7feeds_news_filter"><?php _e('News filter (optional):'); ?> <textarea class="widefat" rows="7" name="wp7feeds_news_filter"><?php echo addslashes($news_filter)?></textarea><br>For enter several words, separate they with coma</label></p>
 			<p><label for="wp7feeds_news_filter_type"><?php _e('Filter type:'); ?> <select name="wp7feeds_news_filter_type"><option value="0">Contains</option><option value="1" <?php echo ($news_filter_type==1?'selected':'')?>>Does not contain</option></select></label></p>
 			<p><label for="wp7feeds_news_filter_condition"><?php _e('Filter condition:'); ?> <select name="wp7feeds_news_filter_condition"><option value="0">OR</option><option <?php echo ($news_filter_condition==1?'selected':'')?> value="1">AND</option></select></label></p>
@@ -902,7 +904,7 @@ function widget_7feeds_init() {
     wp_register_script('7feeds_ticker',_7FEEDS_PATH.'js/7feeds.js');
 
   }
-
+  
   if ($GLOBALS['7FEEDS_ACTIVE'] === true) {
     register_widget('WP_Widget_7feeds');
   }
