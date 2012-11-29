@@ -3,7 +3,7 @@
 Plugin Name: 7feeds ticker
 Plugin URI: http://7feeds.com
 Description: Flash based RSS ticker widget for WordPress. <a href="http://7feeds.com">Visit widget page</a> for more information.
-Version: 1.10.5
+Version: 1.10.6
 Author: IOIX Ukraine
 Author URI: http://ioix.com.ua
 

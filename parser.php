@@ -29,6 +29,7 @@ $url = $tUrl = isset($HTTP_GET_VARS['link'])?$HTTP_GET_VARS['link']:isset($_GET[
 
 //Include wp config
 require("../../../wp-config.php");
+
 if ((isset($url))&&(trim($url) != '')) {
   $aTmp = get_option('widget_7feeds-widget');
   
@@ -36,7 +37,6 @@ if ((isset($url))&&(trim($url) != '')) {
     $gNewsOrder = $aTmp[$tUrl]['news_order'];
     $url = unserialize($aTmp[$tUrl]['feed_url']);
   }
-  
  
   if (isset($aTmp[$tUrl])) {
     $gNewsOrder = $aTmp[$tUrl]['news_order'];
@@ -48,7 +48,7 @@ if ((isset($url))&&(trim($url) != '')) {
   }
  
   //Default value
-  if (empty($tUrl)) {
+  if (empty($url)) {
     unset($aTmp);
     $aTmp = get_option('wp7feeds_options');
     $gNewsOrder = $aTmp['news_order'];
@@ -68,6 +68,7 @@ if ((isset($url))&&(trim($url) != '')) {
 $a_Tmp["news_filter"]=isset($HTTP_GET_VARS['nf'])?$HTTP_GET_VARS['nf']:isset($_GET['nf'])?$_GET['nf']:$a_Tmp["news_filter"];
 $a_Tmp["news_filter_type"]=isset($HTTP_GET_VARS['nft'])?$HTTP_GET_VARS['nft']:isset($_GET['nft'])?$_GET['nft']:$a_Tmp["news_filter_type"];
 $a_Tmp["news_filter_condition"]=isset($HTTP_GET_VARS['nfc'])?$HTTP_GET_VARS['nfc']:isset($_GET['nfc'])?$_GET['nfc']:$a_Tmp["news_filter_condition"];
+
 
 $aFeedUrls = array();
 if (!is_array($url)) {
@@ -255,10 +256,13 @@ for ($i=0; $i < $c; $i++) {
   if (trim(strip_tags($value['description'])) == '' && trim(strip_tags($value['title'])) == '') {
     continue;
   }
+  
+  unset($value['pubDate1']);
   $tData[$cnt] = $value;
 
   $cnt++;
 }
+
 
 //Check channel
 $arr['rss']['channel'] = $aFeedChanel;
